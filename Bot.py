@@ -32,3 +32,4 @@ for name, ticker in symbols.items():
 text = "\n".join(lines)
 requests.get(f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
              params={"chat_id": CHAT_ID, "text": text})
+
