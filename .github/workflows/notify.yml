@@ -1,8 +1,9 @@
 name: NotifyStockTelegram
+
 on:
   schedule:
-    - cron: '*/5 * * * *'  # cứ mỗi 5 phút một lần (tối thiểu)
-workflow_dispatch:
+    - cron: '*/5 * * * *'  # chạy mỗi 5 phút
+  workflow_dispatch:        # CHÚ Ý: ngang hàng với schedule
 
 jobs:
   send:
