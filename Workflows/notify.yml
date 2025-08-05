@@ -1,0 +1,20 @@
+name: NotifyStockTelegram
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # cứ mỗi 5 phút một lần (tối thiểu)
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cài Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Cài thư viện
+        run: pip install yfinance requests
+      - name: Gửi báo cáo
+        run: python bot.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID:   ${{ secrets.CHAT_ID }}
