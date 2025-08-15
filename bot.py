@@ -1,83 +1,446 @@
+#!/usr/bin/env python3
+# bot_debug.py — Telegram VN stocks reporter with verbose debug & safe sending
+# - Prints the full message to logs
+# - Sends to Telegram with POST
+# - Shows Telegram API response for each chunk
+# - Robust yfinance fetch + optional foreign flows via vnstock
+#
+# Env vars required in GitHub Actions:
+#   BOT_TOKEN, CHAT_ID
+# Optional:
+#   USE_VNSTOCK (1/true to enable), PCT_ALERT_UP, PCT_ALERT_DOWN, VOL_SURGE_MULT
+#
+# requirements.txt:
+#   yfinance
+#   pandas
+#   numpy
+#   requests
+#   vnstock   # (optional)
 
-import datetime
+import os
+import re
+import traceback
+from datetime import datetime, timedelta
 
-# Dummy data for testing
-data = {
-    "VN-Index": {"price": None, "change_pct": None, "volume": None, "foreign_buy": None, "foreign_sell": None},
-    "VN30": {"price": None, "change_pct": None, "volume": None, "foreign_buy": None, "foreign_sell": None},
-    "MBB": {"price": 28250, "change_pct": 2.36, "volume": 121_513_479, "foreign_buy": 1_200_000, "foreign_sell": 900_000},
-    "HPG": {"price": 28000, "change_pct": -0.71, "volume": 108_066_934, "foreign_buy": 500_000, "foreign_sell": 1_000_000},
-    "SSI": {"price": 36550, "change_pct": -0.68, "volume": 58_531_482, "foreign_buy": 700_000, "foreign_sell": 1_200_000},
-    "PVP": {"price": 15250, "change_pct": 0.00, "volume": 460_338, "foreign_buy": 50_000, "foreign_sell": 50_000},
-    "KSB": {"price": 19700, "change_pct": -2.72, "volume": 5_053_876, "foreign_buy": 30_000, "foreign_sell": 100_000},
-    "QTP": {"price": None, "change_pct": None, "volume": None, "foreign_buy": None, "foreign_sell": None}
+import requests
+import pandas as pd
+import numpy as np
+import yfinance as yf
+
+# =============== Config & ENV ===============
+USE_VNSTOCK = os.getenv("USE_VNSTOCK", "").lower() not in ("", "0", "false", "no")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
+CHAT_ID   = os.getenv("CHAT_ID", "").strip()
+
+if not BOT_TOKEN or not CHAT_ID:
+    raise SystemExit("Error: BOT_TOKEN and CHAT_ID must be set as environment variables.")
+
+# Watchlist (edit as needed)
+SYMBOLS = {
+    "VN-Index": "^VNINDEX",
+    "VN30": "^VN30",
+    "MBB": "MBB.VN",
+    "HPG": "HPG.VN",
+    "SSI": "SSI.VN",
+    "PVP": "PVP.VN",
+    "KSB": "KSB.VN",
+    "QTP": "QTP.VN"
 }
 
-symbols = ["MBB", "HPG", "SSI", "PVP", "KSB", "QTP"]
+# Alerts thresholds
+PCT_ALERT_UP = float(os.getenv("PCT_ALERT_UP", "2.0"))
+PCT_ALERT_DOWN = float(os.getenv("PCT_ALERT_DOWN", "-2.0"))
+VOL_SURGE_MULT = float(os.getenv("VOL_SURGE_MULT", "2.0"))
 
-def format_value(value):
-    if value is None:
-        return "— (lỗi dữ liệu)"
-    return f"{value:,.0f}"
+# =============== Helpers ===============
+def dbg(msg):
+    print(f"[DEBUG] {msg}", flush=True)
 
-def format_change(change):
-    if change is None:
-        return ""
-    arrow = "🔼" if change > 0 else "🔽" if change < 0 else "⏺"
-    return f"{arrow} ({change:+.2f}%)"
+def indicators_from_df(df: pd.DataFrame):
+    out = {}
+    if df is None or df.empty or 'Close' not in df:
+        return out
+    close = df['Close'].astype(float).dropna()
+    if close.empty:
+        return out
 
-def build_report(data, symbols):
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    
-    # Summary for VN-Index
-    vn_index_info = data.get("VN-Index", {})
-    vn_index_text = f"📈 VN-Index: {format_value(vn_index_info.get('price'))} {format_change(vn_index_info.get('change_pct'))}"
-    
-    # Market summary
-    ups = [s for s in symbols if data[s]["change_pct"] and data[s]["change_pct"] > 0]
-    downs = [s for s in symbols if data[s]["change_pct"] and data[s]["change_pct"] < 0]
-    summary_text = f"Summary: Tăng {len(ups)} / Giảm {len(downs)}"
-    
-    # Top gainers & losers
-    top_gainers = sorted(ups, key=lambda s: data[s]["change_pct"], reverse=True)[:3]
-    top_losers = sorted(downs, key=lambda s: data[s]["change_pct"])[:3]
-    
-    top_gain_text = "\n".join([
-        f"  {s}: {format_value(data[s]['price'])} {format_change(data[s]['change_pct'])}, KL={format_value(data[s]['volume'])}" 
-        for s in top_gainers
-    ]) or "  —"
-    
-    top_lose_text = "\n".join([
-        f"  {s}: {format_value(data[s]['price'])} {format_change(data[s]['change_pct'])}, KL={format_value(data[s]['volume'])}" 
-        for s in top_losers
-    ]) or "  —"
-    
-    # Details with foreign trading
-    details_lines = []
-    for s in ["VN-Index", "VN30"] + symbols:
-        info = data[s]
-        details_lines.append(
-            f"{s}: {format_value(info['price'])} {format_change(info['change_pct'])}, KL={format_value(info['volume'])}, "
-            f"NN Mua={format_value(info['foreign_buy'])}, NN Bán={format_value(info['foreign_sell'])}"
-        )
-    
-    details_text = "\n".join(details_lines)
-    
-    # Build full message
-    message = f"""📊 Báo cáo nhanh — {now}
-{vn_index_text}
-{summary_text}
-🔺 Top tăng:
-{top_gain_text}
-🔻 Top giảm:
-{top_lose_text}
+    out['last'] = float(close.iloc[-1])
+    out['prev'] = float(close.iloc[-2]) if len(close) >= 2 else out['last']
+    out['pct'] = (out['last'] / out['prev'] - 1) * 100 if out['prev'] != 0 else 0.0
 
-Chi tiết mã:
-{details_text}
+    for n in (20, 50, 200):
+        out[f'sma{n}'] = float(close.rolling(n).mean().iloc[-1]) if len(close) >= n else None
 
-(Thời gian báo cáo: {now}) — Bot
-"""
-    return message
+    # Volume
+    if 'Volume' in df and len(df['Volume'].dropna()) >= 20:
+        vol = df['Volume'].astype(float).fillna(0)
+        out['avgvol20'] = int(vol.rolling(20).mean().iloc[-1])
+        out['vol'] = int(vol.iloc[-1])
+        out['vol_ratio'] = (out['vol'] / out['avgvol20']) if out['avgvol20'] else None
+    else:
+        out['avgvol20'] = out['vol'] = out['vol_ratio'] = None
+
+    # ATR14
+    try:
+        if len(df) >= 15 and {'High','Low','Close'}.issubset(df.columns):
+            high = df['High'].astype(float)
+            low = df['Low'].astype(float)
+            cshift = df['Close'].astype(float).shift(1)
+            tr = pd.concat([high - low, (high - cshift).abs(), (low - cshift).abs()], axis=1).max(axis=1).dropna()
+            out['atr14'] = float(tr.rolling(14).mean().iloc[-1]) if len(tr) >= 14 else None
+        else:
+            out['atr14'] = None
+    except Exception:
+        out['atr14'] = None
+
+    return out
+
+def get_with_yfinance(ticker_symbol, period='365d'):
+    periods_to_try = [period, '240d', '120d', '60d', '30d', '14d', '7d', '5d', '2d']
+    last_exc = None
+    for p in periods_to_try:
+        try:
+            tk = yf.Ticker(ticker_symbol)
+            hist = tk.history(period=p, auto_adjust=False)
+            if hist is not None and not hist.empty and 'Close' in hist:
+                info = indicators_from_df(hist)
+                info['history_rows'] = len(hist)
+                try:
+                    info['name'] = tk.info.get('shortName') if hasattr(tk, 'info') else None
+                except Exception:
+                    info['name'] = None
+                dbg(f"[yfinance] {ticker_symbol} got {len(hist)} rows (period={p})")
+                return info
+            else:
+                dbg(f"[yfinance] {ticker_symbol} empty for period={p}")
+        except Exception as e:
+            last_exc = e
+            dbg(f"[yfinance] error for {ticker_symbol} period={p}: {e}")
+    # fallback: download
+    try:
+        df = yf.download(ticker_symbol, period='60d', progress=False)
+        if df is not None and not df.empty:
+            info = indicators_from_df(df)
+            info['history_rows'] = len(df)
+            dbg(f"[yfinance.download] {ticker_symbol} got {len(df)} rows")
+            return info
+    except Exception as e:
+        dbg(f"yfinance.download fallback error: {e}")
+    dbg(f"[yfinance] All attempts failed for {ticker_symbol}. Last exception: {last_exc}")
+    return None
+
+def _extract_buy_sell_from_obj(obj):
+    if obj is None:
+        return (None, None)
+    if isinstance(obj, dict):
+        data = obj
+    else:
+        try:
+            data = {k: getattr(obj, k) for k in dir(obj) if not k.startswith("_")}
+        except Exception:
+            return (None, None)
+
+    def parse_num(x):
+        if x is None: return None
+        if isinstance(x, (int, float)): return float(x)
+        s = str(x)
+        s2 = re.sub(r"[^\d\.\-]", "", s)
+        if s2 in ("", ".", "-"): return None
+        try: return float(s2)
+        except: return None
+
+    buy = sell = None
+    for k, v in data.items():
+        kl = str(k).lower()
+        if any(tok in kl for tok in ("buy","mua","foreignbuy","nn_mua","muarong","mua_rong")) and buy is None:
+            buy = parse_num(v)
+        if any(tok in kl for tok in ("sell","ban","foreignsell","nn_ban","banrong","ban_rong")) and sell is None:
+            sell = parse_num(v)
+        if any(tok in kl for tok in ("net","ròng","rong","muanet","ban_net")) and (buy is None and sell is None):
+            val = parse_num(v)
+            if val is not None:
+                if val >= 0: buy, sell = val, 0.0
+                else: buy, sell = 0.0, abs(val)
+    return (buy, sell)
+
+def get_foreign_for_symbol(symbol):
+    try:
+        import vnstock as vns
+    except Exception:
+        return None
+    sym = symbol.replace('.VN','')
+    candidates = []
+    for fn in ("foreign", "fii", "get_foreign", "foreign_flow", "foreign_trading", "fii_trading"):
+        try:
+            if hasattr(vns, fn):
+                try:
+                    candidates.append(getattr(vns, fn)(sym))
+                except Exception:
+                    pass
+        except Exception:
+            pass
+    try:
+        if hasattr(vns, "price_board"):
+            pb = vns.price_board([sym])
+            if isinstance(pb, dict):
+                candidates.append(pb.get(sym) or pb)
+            else:
+                candidates.append(pb)
+    except Exception:
+        pass
+
+    for cand in candidates:
+        b, s = _extract_buy_sell_from_obj(cand)
+        if b is not None or s is not None:
+            return {"buy": b, "sell": s}
+    return None
+
+def get_foreign_for_symbols(symbols):
+    out = {}
+    for s in symbols:
+        try:
+            out[s] = get_foreign_for_symbol(s)
+        except Exception:
+            out[s] = None
+    return out
+
+def format_line_with_foreign(name, ticker, info, foreign_info=None):
+    if not info:
+        base = f"{name}: — (lỗi dữ liệu)"
+    else:
+        last = info.get('last')
+        pct = info.get('pct')
+        vol = info.get('vol')
+        dir_arrow = "" if pct is None else ("🔼" if pct > 0 else ("🔽" if pct < 0 else "⏺"))
+        sma50 = info.get('sma50')
+        sma_label = f" | SMA50={int(sma50):,}" if sma50 else ""
+        vol_s = f", KL={vol:,}" if vol not in (None, 0) else ""
+        pct_s = f" ({pct:+.2f}%)" if pct is not None else ""
+        base = f"{name}: {last:,.0f} {dir_arrow}{pct_s}{vol_s}{sma_label}"
+
+    if foreign_info:
+        b = foreign_info.get("buy") if isinstance(foreign_info, dict) else None
+        s = foreign_info.get("sell") if isinstance(foreign_info, dict) else None
+        def fmt_num(x):
+            if x is None: return "—"
+            try: return f"{int(x):,}"
+            except: return str(x)
+        return f"{base} | NN Mua={fmt_num(b)} | NN Bán={fmt_num(s)}"
+    return base
+
+def get_index_info(index_ticker="^VNINDEX", vn30_tickers=None):
+    try:
+        tk = yf.Ticker(index_ticker)
+        hist = tk.history(period='365d', auto_adjust=False)
+        if hist is None or hist.empty:
+            dbg("Index history empty")
+            return None
+        info = indicators_from_df(hist)
+    except Exception as e:
+        dbg(f"Error fetching index base: {e}")
+        return None
+
+    # pct vs month start
+    try:
+        now = datetime.utcnow()
+        month_start = datetime(now.year, now.month, 1)
+        hist_month = tk.history(start=month_start.strftime("%Y-%m-%d"), end=(now + timedelta(days=1)).strftime("%Y-%m-%d"))
+        if hist_month is not None and not hist_month.empty:
+            month_open = float(hist_month['Open'].iloc[0])
+            info['pct_vs_month_start'] = (info['last'] / month_open - 1) * 100 if month_open != 0 else None
+        else:
+            info['pct_vs_month_start'] = None
+    except Exception:
+        info['pct_vs_month_start'] = None
+
+    # 52w
+    try:
+        last_52 = hist.tail(252) if len(hist) >= 252 else hist
+        info['52w_high'] = float(last_52['High'].max())
+        info['52w_low']  = float(last_52['Low'].min())
+    except Exception:
+        info['52w_high'] = info['52w_low'] = None
+
+    # breadth
+    if vn30_tickers:
+        adv = dec = neu = 0
+        for t in vn30_tickers:
+            try:
+                tk2 = yf.Ticker(t)
+                h = tk2.history(period='7d', auto_adjust=False)
+                if h is None or h.empty:
+                    continue
+                last = float(h['Close'].iloc[-1])
+                prev = float(h['Close'].iloc[-2]) if len(h['Close']) >= 2 else last
+                pct = (last/prev - 1) * 100 if prev != 0 else 0
+                if pct > 0: adv += 1
+                elif pct < 0: dec += 1
+                else: neu += 1
+            except Exception:
+                continue
+        info['breadth'] = {"adv": adv, "dec": dec, "neu": neu}
+
+    return info
+
+def format_index_block(index_info):
+    if not index_info:
+        return "📈 VN-Index: — (lỗi dữ liệu)"
+    last = index_info.get('last')
+    pct = index_info.get('pct')
+    pct_month = index_info.get('pct_vs_month_start')
+    sma20 = index_info.get('sma20'); sma50 = index_info.get('sma50'); sma200 = index_info.get('sma200')
+    h52 = index_info.get('52w_high'); l52 = index_info.get('52w_low')
+    atr = index_info.get('atr14'); breadth = index_info.get('breadth', {})
+
+    lines = []
+    lines.append(f"📈 VN-Index: {last:,.2f} ({pct:+.2f}%)" if last is not None and pct is not None else "📈 VN-Index: — (lỗi dữ liệu)")
+    if pct_month is not None:
+        lines.append(f"   So với đầu tháng: {pct_month:+.2f}%")
+    sma_line = " | ".join([f"SMA20={int(sma20):,}" if sma20 else "SMA20=—",
+                           f"SMA50={int(sma50):,}" if sma50 else "SMA50=—",
+                           f"SMA200={int(sma200):,}" if sma200 else "SMA200=—"])
+    lines.append("   " + sma_line)
+    if h52 and l52:
+        lines.append(f"   52w: {l52:,.0f} — {h52:,.0f}")
+    if atr:
+        lines.append(f"   ATR14: {atr:.2f}")
+    if breadth:
+        lines.append(f"   Breadth (watchlist): ↑ {breadth.get('adv',0)} / ↓ {breadth.get('dec',0)} / = {breadth.get('neu',0)}")
+    return "\n".join([l for l in lines if l])
+
+# =============== Report builder ===============
+def build_report(symbols):
+    lines = []
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    lines.append(f"📊 Báo cáo nhanh — {now}")
+
+    vn_list = [t for t in symbols.values() if t.endswith('.VN')]
+    index_info = get_index_info("^VNINDEX", vn30_tickers=vn_list if vn_list else None)
+    lines.append(format_index_block(index_info))
+
+    foreign_map = {}
+    if USE_VNSTOCK and vn_list:
+        try:
+            foreign_map = get_foreign_for_symbols([s.replace('.VN','') for s in vn_list])
+        except Exception as e:
+            dbg(f"Foreign fetch error: {e}")
+            foreign_map = {}
+
+    details = []
+    for name, ticker in symbols.items():
+        if str(ticker).startswith("^"):
+            continue
+        info = get_with_yfinance(ticker, period='120d')
+        finfo = None
+        if ticker.endswith('.VN'):
+            finfo = foreign_map.get(ticker.replace('.VN','')) if foreign_map else None
+        details.append((name, ticker, info, finfo))
+
+    up_count = sum(1 for (_,_,info,_) in details if info and info.get('pct',0)>0)
+    down_count = sum(1 for (_,_,info,_) in details if info and info.get('pct',0)<0)
+    lines.append(f"Summary: Tăng {up_count} / Giảm {down_count}")
+
+    movers = [(name, ticker, info) for (name,ticker,info,_) in details if info]
+    top_up = sorted([m for m in movers if m[2].get('pct',0)>0], key=lambda x: -x[2]['pct'])[:3]
+    top_down = sorted([m for m in movers if m[2].get('pct',0)<0], key=lambda x: x[2]['pct'])[:3]
+
+    if top_up:
+        lines.append("🔺 Top tăng:")
+        for name, tick, info in top_up:
+            finfo = foreign_map.get(tick.replace('.VN','')) if (USE_VNSTOCK and tick.endswith('.VN')) else None
+            lines.append("  " + format_line_with_foreign(name, tick, info, foreign_info=finfo))
+    if top_down:
+        lines.append("🔻 Top giảm:")
+        for name, tick, info in top_down:
+            finfo = foreign_map.get(tick.replace('.VN','')) if (USE_VNSTOCK and tick.endswith('.VN')) else None
+            lines.append("  " + format_line_with_foreign(name, tick, info, foreign_info=finfo))
+
+    lines.append("")
+    lines.append("Chi tiết mã:")
+    for name, ticker, info, finfo in details:
+        lines.append(format_line_with_foreign(name, ticker, info, foreign_info=finfo))
+
+    # Alerts
+    alert_lines = []
+    for name, ticker, info, finfo in details:
+        if not info:
+            continue
+        pct = info.get('pct', 0)
+        vol_ratio = info.get('vol_ratio')
+        if pct is not None and pct >= PCT_ALERT_UP:
+            alert_lines.append(f"{name} {pct:+.2f}% (↑)")
+        if pct is not None and pct <= PCT_ALERT_DOWN:
+            alert_lines.append(f"{name} {pct:+.2f}% (↓)")
+        if vol_ratio and vol_ratio >= VOL_SURGE_MULT:
+            alert_lines.append(f"{name} Vol surge {vol_ratio:.2f}×")
+
+    if alert_lines:
+        lines.append("")
+        lines.append("⚠️ Alerts:")
+        for a in alert_lines:
+            lines.append("  " + a)
+
+    lines.append("")
+    lines.append(f"(Thời gian báo cáo: {now}) - Bot")
+    return "\n".join(lines)
+
+# =============== Telegram sending ===============
+def chunk_text(s: str, limit: int = 3500):
+    """Split text to chunks <= limit, prefer newline boundaries."""
+    s = s or ""
+    if len(s) <= limit:
+        return [s]
+    chunks = []
+    cur = s
+    while len(cur) > limit:
+        cut = cur.rfind("\n", 0, limit)
+        if cut == -1:
+            cut = limit
+        chunks.append(cur[:cut])
+        cur = cur[cut:]
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+def send_to_telegram(text: str):
+    base_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    token_mask = "***" + BOT_TOKEN[-6:]
+    dbg(f"Preparing to send to Telegram. CHAT_ID={CHAT_ID}, TOKEN={token_mask}")
+    parts = chunk_text(text, 3500)
+    dbg(f"Message length={len(text)}, chunks={len(parts)}")
+    all_ok = True
+    for i, part in enumerate(parts, 1):
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": part,
+            # Avoid markdown parse issues with emojis/commas; keep plain text.
+            "disable_web_page_preview": True,
+        }
+        try:
+            dbg(f"Sending chunk {i}/{len(parts)} (len={len(part)}) ...")
+            r = requests.post(base_url, data=payload, timeout=20)
+            dbg(f"Telegram response: {r.status_code} {r.text[:500]}")
+            if r.status_code != 200:
+                all_ok = False
+        except Exception as e:
+            dbg(f"Error sending chunk {i}: {e}")
+            all_ok = False
+    return all_ok
+
+# =============== Main ===============
+def main():
+    try:
+        report = build_report(SYMBOLS)
+        print("=== Report preview (debug) ===")
+        print(report)
+        ok = send_to_telegram(report)
+        if ok:
+            dbg("All chunks sent OK.")
+        else:
+            dbg("One or more chunks failed to send. See responses above.")
+    except Exception as e:
+        print("Fatal error in main:", e)
+        traceback.print_exc()
 
 if __name__ == "__main__":
-    print(build_report(data, symbols))
+    main()
