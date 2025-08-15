@@ -152,3 +152,143 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ---------------------- Foreign flows (NN = Nhà đầu tư nước ngoài) ----------------------
+# Best-effort extractor: tries to use `vnstock` if available; otherwise returns None.
+# vnstock may provide foreign flows; different libraries/APIs use different keys.
+# This code inspects returned dicts and tries to extract numeric values for buy/sell.
+import math
+
+def _extract_buy_sell_from_obj(obj):
+    '''
+    Try to find buy/sell numbers in a returned object/dict by searching keys that match
+    english/vietnamese terms (buy/sell, mua/ban, foreign, NN, net). Returns (buy, sell) or (None,None).
+    '''
+    if obj is None:
+        return (None, None)
+    # If it's not a dict, try to convert
+    data = {}
+    if isinstance(obj, dict):
+        data = obj
+    else:
+        # try to turn into dict via attributes
+        try:
+            data = {k: getattr(obj, k) for k in dir(obj) if not k.startswith("_")}
+        except Exception:
+            return (None, None)
+    buy = None
+    sell = None
+    # helper to parse a numeric from string
+    def parse_num(x):
+        if x is None: 
+            return None
+        # try direct numeric
+        if isinstance(x, (int, float)):
+            return float(x)
+        s = str(x)
+        # remove non-numeric except dot and minus
+        s2 = re.sub(r"[^\d\.\-]", "", s)
+        if s2 == "" or s2 == "." or s2 == "-":
+            return None
+        try:
+            return float(s2)
+        except:
+            return None
+
+    for k, v in data.items():
+        kl = k.lower()
+        if any(tok in kl for tok in ("buy","mua","mua_rong","mua_net","foreignbuy","foreign_buy","nn_mua","nn_buy")) and buy is None:
+            buy = parse_num(v)
+        if any(tok in kl for tok in ("sell","ban","ban_rong","ban_net","foreignsell","foreign_sell","nn_ban","nn_sell")) and sell is None:
+            sell = parse_num(v)
+        # some APIs provide net flows directly
+        if any(tok in kl for tok in ("net","ròng","mua_ròng","mua_rong")) and buy is None and sell is None:
+            val = parse_num(v)
+            if val is not None:
+                # approximate: net positive -> buy=net, sell=0 (best-effort)
+                if val >= 0:
+                    buy = val
+                    sell = 0.0
+                else:
+                    buy = 0.0
+                    sell = abs(val)
+    return (buy, sell)
+
+def get_foreign_for_symbol(symbol):
+    '''
+    Return dict {'buy': float or None, 'sell': float or None} for a given ticker like 'MBB.VN' or 'MBB'.
+    Strategy:
+      1) If vnstock present, try to call common functions and inspect results.
+      2) If not available, return None. You can replace this function to call an API you have.
+    '''
+    # try vnstock first
+    try:
+        import vnstock as vns
+    except Exception:
+        return None  # vnstock not installed — user can enable it or provide API endpoint
+
+    # Try a few likely function names and fall back to price_board details
+    candidates = []
+    try:
+        # some versions may have "foreign" or "fii" functions, try generically
+        for fn in ("foreign", "fii", "get_foreign", "foreign_flow", "foreign_trading"):
+            if hasattr(vns, fn):
+                try:
+                    res = getattr(vns, fn)(symbol.replace(".VN",""))
+                    candidates.append(res)
+                except Exception:
+                    pass
+        # vnstock.price_board returns summary info and may include foreign buy/sell
+        if hasattr(vns, "price_board"):
+            try:
+                data = vns.price_board([symbol.replace(".VN","")])
+                # price_board returns dict keyed by symbol
+                if isinstance(data, dict):
+                    candidates.append(data.get(symbol.replace(".VN","")) or data)
+                else:
+                    candidates.append(data)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    # try to extract numeric buy/sell
+    for cand in candidates:
+        b, s = _extract_buy_sell_from_obj(cand)
+        if b is not None or s is not None:
+            return {"buy": b, "sell": s}
+    return None
+
+def get_foreign_for_symbols(symbols):
+    '''
+    Batch utility: symbols is list of tickers like ['MBB.VN','HPG.VN',...']
+    Returns mapping ticker -> {'buy':..., 'sell':...} or None
+    '''
+    out = {}
+    for s in symbols:
+        try:
+            res = get_foreign_for_symbol(s)
+            out[s] = res
+        except Exception as e:
+            out[s] = None
+    return out
+
+# ------------------- Integration into formatting -------------------
+# We'll update format_line to accept optional foreign info and display it.
+def format_line_with_foreign(name, ticker, info, foreign_info=None):
+    base = format_line(name, ticker, info)
+    if foreign_info:
+        b = foreign_info.get("buy")
+        s = foreign_info.get("sell")
+        b_s = f"NN Mua={int(b):,}" if (b is not None) else "NN Mua=—"
+        s_s = f"NN Bán={int(s):,}" if (s is not None) else "NN Bán=—"
+        return f"{base} | {b_s} | {s_s}"
+    return base
+
+# To use: when building the report, call get_foreign_for_symbols for the list of tickers (with .VN suffix for vnstock).
+# Example insertion into build_report (pseudo):
+# vn_symbols = [t for t in symbols.values() if t.endswith('.VN')]
+# foreign_map = get_foreign_for_symbols(vn_symbols)
+# then for each symbol use format_line_with_foreign(..., foreign_info=foreign_map.get(ticker.replace('.VN','')))
+# Note: function returns numbers in units provided by API (often shares or value); adjust formatting as needed.
