@@ -1,18 +1,30 @@
 #!/usr/bin/env python3
-"""
-Telegram Stock Reporter bot (ready for GitHub Actions)
-- Reads BOT_TOKEN and CHAT_ID from environment variables (set them as GitHub Secrets)
-- Uses yfinance by default. If vnstock is installed and you prefer, set USE_VNSTOCK=1 in env to use it.
-- Sends a compact report for a list of symbols.
-"""
+# bot.py - Telegram stock reporter (updated)
+# Copy this file to replace your current bot.py
 
 import os
+import re
+import math
 import time
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 import requests
+
+# Third-party libs
+import pandas as pd
+import numpy as np
+import yfinance as yf
 
 USE_VNSTOCK = os.getenv("USE_VNSTOCK", "") not in ("", "0", "False", "false")
 
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID   = os.getenv("CHAT_ID")
+
+if not BOT_TOKEN or not CHAT_ID:
+    raise SystemExit("Error: BOT_TOKEN and CHAT_ID must be set as environment variables.")
+
+SEND_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
+# === Your watchlist / test symbols ===
 SYMBOLS = {
     "VN-Index": "^VNINDEX",
     "VN30": "^VN30",
@@ -24,14 +36,7 @@ SYMBOLS = {
     "QTP": "QTP.VN"
 }
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID   = os.getenv("CHAT_ID")
-
-if not BOT_TOKEN or not CHAT_ID:
-    raise SystemExit("Error: BOT_TOKEN and CHAT_ID must be set in environment variables. Add them as GitHub Secrets.")
-
-SEND_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
+# ---------------- Utility HTTP ----------------
 def safe_request(url, params=None, timeout=15):
     try:
         r = requests.get(url, params=params, timeout=timeout)
@@ -41,219 +46,180 @@ def safe_request(url, params=None, timeout=15):
         print("HTTP error:", e)
         return None
 
-def get_with_yfinance(ticker_symbol):
-    try:
-        import yfinance as yf
-    except Exception as e:
-        print("yfinance not installed or import error:", e)
-        return None
+# ---------------- Indicators helper ----------------
+def indicators_from_df(df):
+    """
+    Input: df with columns ['Open','High','Low','Close','Volume'] indexed by datetime (oldest..newest)
+    Returns dict with last, prev, pct, sma20/50/200, rsi14, macd, macd_signal, avgvol20, vol, vol_ratio, atr14
+    """
+    out = {}
+    if df is None or df.empty or 'Close' not in df:
+        return out
+    close = df['Close'].astype(float).dropna()
+    if close.empty:
+        return out
 
+    out['last'] = float(close.iloc[-1])
+    out['prev'] = float(close.iloc[-2]) if len(close) >= 2 else out['last']
+    out['pct'] = (out['last'] / out['prev'] - 1) * 100 if out['prev'] != 0 else 0.0
+
+    # SMAs
+    for n in (20, 50, 200):
+        if len(close) >= n:
+            out[f'sma{n}'] = float(close.rolling(n).mean().iloc[-1])
+        else:
+            out[f'sma{n}'] = None
+
+    # RSI14 (EWMA-style)
+    if len(close) >= 15:
+        delta = close.diff().dropna()
+        ups = delta.clip(lower=0)
+        downs = -delta.clip(upper=0)
+        roll_up = ups.ewm(alpha=1/14, adjust=False).mean()
+        roll_down = downs.ewm(alpha=1/14, adjust=False).mean()
+        if roll_down.iloc[-1] == 0:
+            rs = float('inf')
+            out['rsi14'] = 100.0
+        else:
+            rs = roll_up.iloc[-1] / roll_down.iloc[-1]
+            out['rsi14'] = 100 - (100 / (1 + rs))
+    else:
+        out['rsi14'] = None
+
+    # MACD (12,26,9)
+    if len(close) >= 26:
+        ema12 = close.ewm(span=12, adjust=False).mean()
+        ema26 = close.ewm(span=26, adjust=False).mean()
+        macd = ema12 - ema26
+        signal = macd.ewm(span=9, adjust=False).mean()
+        out['macd'] = float(macd.iloc[-1])
+        out['macd_signal'] = float(signal.iloc[-1])
+    else:
+        out['macd'] = out['macd_signal'] = None
+
+    # AvgVol20 and vol ratio
+    if 'Volume' in df and len(df['Volume'].dropna()) >= 20:
+        vol = df['Volume'].astype(float).fillna(0)
+        out['avgvol20'] = int(vol.rolling(20).mean().iloc[-1])
+        out['vol'] = int(vol.iloc[-1])
+        out['vol_ratio'] = (out['vol'] / out['avgvol20']) if out['avgvol20'] and out['avgvol20'] > 0 else None
+    else:
+        out['avgvol20'] = out['vol'] = out['vol_ratio'] = None
+
+    # ATR14
+    if len(df) >= 15 and {'High','Low','Close'}.issubset(df.columns):
+        high = df['High'].astype(float)
+        low = df['Low'].astype(float)
+        close_shift = df['Close'].astype(float).shift(1)
+        tr1 = high - low
+        tr2 = (high - close_shift).abs()
+        tr3 = (low - close_shift).abs()
+        tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1).dropna()
+        if len(tr) >= 14:
+            out['atr14'] = float(tr.rolling(14).mean().iloc[-1])
+        else:
+            out['atr14'] = None
+    else:
+        out['atr14'] = None
+
+    return out
+
+# ---------------- yfinance symbol fetch ----------------
+def get_with_yfinance(ticker_symbol, period='365d'):
     try:
         tk = yf.Ticker(ticker_symbol)
-        # request a short history: 7 days to be robust across weekends/holidays
-        hist = tk.history(period='7d', auto_adjust=False)
-        if hist.empty or 'Close' not in hist:
+        # get enough days for SMA200/52w
+        hist = tk.history(period=period, auto_adjust=False)
+        if hist is None or hist.empty:
+            print(f"yfinance empty for {ticker_symbol}")
             return None
-        # last available close
-        last = float(hist['Close'].iloc[-1])
-        prev = float(hist['Close'].iloc[-2]) if len(hist['Close']) >= 2 else last
-        pct = (last / prev - 1) * 100 if prev != 0 else 0.0
-        volume = int(hist['Volume'].iloc[-1]) if 'Volume' in hist and not hist['Volume'].isna().all() else None
-        # optional SMA50 signal
-        sma50 = None
-        if 'Close' in hist and len(hist['Close']) >= 50:
-            sma50 = float(hist['Close'].rolling(50).mean().iloc[-1])
-        return dict(last=last, prev=prev, pct=pct, volume=volume, sma50=sma50)
+        info = indicators_from_df(hist)
+        # add some raw metadata
+        info['history_rows'] = len(hist)
+        # include name if available
+        try:
+            info['name'] = tk.info.get('shortName') if hasattr(tk, 'info') else None
+        except Exception:
+            info['name'] = None
+        return info
     except Exception as e:
         print("yfinance fetch error for", ticker_symbol, e)
         return None
 
-def get_with_vnstock(list_symbols):
-    # vnstock price_board works per symbol list; this function attempts to return a dict of results similar to yfinance
-    try:
-        import vnstock as vns
-    except Exception as e:
-        print("vnstock not installed or import error:", e)
-        return {}
-    out = {}
-    try:
-        data = vns.price_board(list_symbols)
-        # data: dict keyed by symbol with fields price, ceiling/floor, etc. Adapt as available.
-        for sym in list_symbols:
-            d = data.get(sym)
-            if not d:
-                continue
-            # vnstock returns price as string sometimes; try to make float
-            try:
-                last = float(d.get("reference") or d.get("close") or d.get("price") or 0)
-            except:
-                last = None
-            out[sym] = dict(last=last, prev=None, pct=None, volume=None, sma50=None)
-    except Exception as e:
-        print("vnstock error:", e)
-    return out
-
-def format_line(name, ticker, info):
-    if not info:
-        return f"{name}: — (lỗi dữ liệu)"
-    last = info.get("last")
-    pct = info.get("pct")
-    vol = info.get("volume")
-    sma50 = info.get("sma50")
-    if last is None:
-        return f"{name}: — (không có giá)"
-    vol_s = f", KL={vol:,}" if vol not in (None, 0) else ""
-    pct_s = f" ({pct:+.2f}%)" if pct is not None else ""
-    sig = ""
-    if sma50:
-        sig = " 🔼" if last > sma50 else " 🔽"
-    return f"{name}: {last:.0f}{sig}{pct_s}{vol_s}"
-
-def build_report(symbols):
-    lines = []
-    lines.append("Báo cáo nhanh — " + datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    if USE_VNSTOCK:
-        # try vnstock for batch retrieval
-        vn_symbols = [s.split(".")[0] for s in symbols.values() if s.endswith(".VN")]
-        vn_data = get_with_vnstock(vn_symbols)
-    else:
-        vn_data = {}
-    for name, ticker in symbols.items():
-        info = None
-        # prefer vnstock result for VN tickers if available
-        if USE_VNSTOCK and ticker.endswith(".VN"):
-            sym_key = ticker.replace(".VN","")
-            info = vn_data.get(sym_key)
-        if info is None:
-            info = get_with_yfinance(ticker)
-        lines.append(format_line(name, ticker, info))
-    return "\n".join(lines)
-
-def send_report(text):
-    params = {"chat_id": CHAT_ID, "text": text}
-    r = safe_request(SEND_URL, params=params)
-    if r is None:
-        print("Failed to send message.")
-        return False
-    j = r.json()
-    if not j.get("ok"):
-        print("Telegram API error:", j)
-        return False
-    return True
-
-def main():
-    report = build_report(SYMBOLS)
-    print(report)
-    ok = send_report(report)
-    if ok:
-        print("Sent to Telegram OK.")
-    else:
-        print("Send failed. See logs.")
-
-if __name__ == "__main__":
-    main()
-
-
-# ---------------------- Foreign flows (NN = Nhà đầu tư nước ngoài) ----------------------
-# Best-effort extractor: tries to use `vnstock` if available; otherwise returns None.
-# vnstock may provide foreign flows; different libraries/APIs use different keys.
-# This code inspects returned dicts and tries to extract numeric values for buy/sell.
-import math
-
+# ---------------- Foreign flows (best-effort via vnstock) ----------------
 def _extract_buy_sell_from_obj(obj):
-    '''
-    Try to find buy/sell numbers in a returned object/dict by searching keys that match
-    english/vietnamese terms (buy/sell, mua/ban, foreign, NN, net). Returns (buy, sell) or (None,None).
-    '''
+    """Try to parse common buy/sell keys from an object/dict returned by vnstock or similar"""
     if obj is None:
         return (None, None)
-    # If it's not a dict, try to convert
-    data = {}
+    # unify to dict
     if isinstance(obj, dict):
         data = obj
     else:
-        # try to turn into dict via attributes
         try:
             data = {k: getattr(obj, k) for k in dir(obj) if not k.startswith("_")}
         except Exception:
             return (None, None)
     buy = None
     sell = None
-    # helper to parse a numeric from string
     def parse_num(x):
-        if x is None: 
+        if x is None:
             return None
-        # try direct numeric
         if isinstance(x, (int, float)):
             return float(x)
         s = str(x)
-        # remove non-numeric except dot and minus
         s2 = re.sub(r"[^\d\.\-]", "", s)
-        if s2 == "" or s2 == "." or s2 == "-":
+        if s2 in ("", ".", "-"):
             return None
         try:
             return float(s2)
         except:
             return None
-
     for k, v in data.items():
-        kl = k.lower()
-        if any(tok in kl for tok in ("buy","mua","mua_rong","mua_net","foreignbuy","foreign_buy","nn_mua","nn_buy")) and buy is None:
+        kl = str(k).lower()
+        if any(tok in kl for tok in ("buy","mua","foreignbuy","nn_mua","f_buy","muarong","mua_rong","mua_ròng")) and buy is None:
             buy = parse_num(v)
-        if any(tok in kl for tok in ("sell","ban","ban_rong","ban_net","foreignsell","foreign_sell","nn_ban","nn_sell")) and sell is None:
+        if any(tok in kl for tok in ("sell","ban","foreignsell","nn_ban","f_sell","banrong","ban_rong","ban_ròng")) and sell is None:
             sell = parse_num(v)
-        # some APIs provide net flows directly
-        if any(tok in kl for tok in ("net","ròng","mua_ròng","mua_rong")) and buy is None and sell is None:
+        # net flows
+        if any(tok in kl for tok in ("net","ròng","rong","muanet","ban_net")) and (buy is None and sell is None):
             val = parse_num(v)
             if val is not None:
-                # approximate: net positive -> buy=net, sell=0 (best-effort)
                 if val >= 0:
-                    buy = val
-                    sell = 0.0
+                    buy = val; sell = 0.0
                 else:
-                    buy = 0.0
-                    sell = abs(val)
+                    buy = 0.0; sell = abs(val)
     return (buy, sell)
 
 def get_foreign_for_symbol(symbol):
-    '''
-    Return dict {'buy': float or None, 'sell': float or None} for a given ticker like 'MBB.VN' or 'MBB'.
-    Strategy:
-      1) If vnstock present, try to call common functions and inspect results.
-      2) If not available, return None. You can replace this function to call an API you have.
-    '''
-    # try vnstock first
+    """
+    Best-effort attempt to fetch foreign buy/sell info for a single symbol.
+    Returns dict {'buy':float or None, 'sell':float or None} or None.
+    """
     try:
         import vnstock as vns
     except Exception:
-        return None  # vnstock not installed — user can enable it or provide API endpoint
+        return None
 
-    # Try a few likely function names and fall back to price_board details
+    sym = symbol.replace('.VN','')
     candidates = []
-    try:
-        # some versions may have "foreign" or "fii" functions, try generically
-        for fn in ("foreign", "fii", "get_foreign", "foreign_flow", "foreign_trading"):
-            if hasattr(vns, fn):
-                try:
-                    res = getattr(vns, fn)(symbol.replace(".VN",""))
-                    candidates.append(res)
-                except Exception:
-                    pass
-        # vnstock.price_board returns summary info and may include foreign buy/sell
-        if hasattr(vns, "price_board"):
+    # try common functions
+    for fn in ("foreign", "fii", "get_foreign", "foreign_flow", "foreign_trading", "fii_trading"):
+        if hasattr(vns, fn):
             try:
-                data = vns.price_board([symbol.replace(".VN","")])
-                # price_board returns dict keyed by symbol
-                if isinstance(data, dict):
-                    candidates.append(data.get(symbol.replace(".VN","")) or data)
-                else:
-                    candidates.append(data)
+                candidates.append(getattr(vns, fn)(sym))
             except Exception:
                 pass
-    except Exception:
-        pass
+    # try price_board
+    if hasattr(vns, "price_board"):
+        try:
+            pb = vns.price_board([sym])
+            if isinstance(pb, dict):
+                candidates.append(pb.get(sym) or pb)
+            else:
+                candidates.append(pb)
+        except Exception:
+            pass
 
-    # try to extract numeric buy/sell
     for cand in candidates:
         b, s = _extract_buy_sell_from_obj(cand)
         if b is not None or s is not None:
@@ -261,34 +227,84 @@ def get_foreign_for_symbol(symbol):
     return None
 
 def get_foreign_for_symbols(symbols):
-    '''
-    Batch utility: symbols is list of tickers like ['MBB.VN','HPG.VN',...']
-    Returns mapping ticker -> {'buy':..., 'sell':...} or None
-    '''
     out = {}
     for s in symbols:
         try:
-            res = get_foreign_for_symbol(s)
-            out[s] = res
+            out[s] = get_foreign_for_symbol(s)
         except Exception as e:
             out[s] = None
     return out
 
-# ------------------- Integration into formatting -------------------
-# We'll update format_line to accept optional foreign info and display it.
+# ---------------- Formatting ----------------
 def format_line_with_foreign(name, ticker, info, foreign_info=None):
-    base = format_line(name, ticker, info)
+    if not info:
+        base = f"{name}: — (lỗi dữ liệu)"
+    else:
+        last = info.get('last')
+        pct = info.get('pct')
+        vol = info.get('vol')
+        vol_ratio = info.get('vol_ratio')
+        sig = ""
+        if info.get('sma50') and last:
+            sig = " 🔼" if last > info.get('sma50') else " 🔽"
+        vol_s = f", KL={vol:,}" if vol not in (None, 0, None) else ""
+        if pct is not None:
+            base = f"{name}: {last:,.0f}{sig} ({pct:+.2f}%)" + vol_s
+        else:
+            base = f"{name}: {last:,.0f}{sig}" + vol_s
+
     if foreign_info:
         b = foreign_info.get("buy")
         s = foreign_info.get("sell")
-        b_s = f"NN Mua={int(b):,}" if (b is not None) else "NN Mua=—"
-        s_s = f"NN Bán={int(s):,}" if (s is not None) else "NN Bán=—"
-        return f"{base} | {b_s} | {s_s}"
+        # show as integer if large, else raw
+        def fmt_num(x):
+            if x is None:
+                return "—"
+            try:
+                xi = int(x)
+                return f"{xi:,}"
+            except:
+                return str(x)
+        return f"{base} | NN Mua={fmt_num(b)} | NN Bán={fmt_num(s)}"
     return base
 
-# To use: when building the report, call get_foreign_for_symbols for the list of tickers (with .VN suffix for vnstock).
-# Example insertion into build_report (pseudo):
-# vn_symbols = [t for t in symbols.values() if t.endswith('.VN')]
-# foreign_map = get_foreign_for_symbols(vn_symbols)
-# then for each symbol use format_line_with_foreign(..., foreign_info=foreign_map.get(ticker.replace('.VN','')))
-# Note: function returns numbers in units provided by API (often shares or value); adjust formatting as needed.
+# ---------------- VN-Index block ----------------
+def get_index_info(index_ticker="^VNINDEX", vn30_tickers=None):
+    try:
+        tk = yf.Ticker(index_ticker)
+        hist = tk.history(period='365d', auto_adjust=False)
+        if hist is None or hist.empty:
+            print("VN-Index history empty")
+            return None
+        info = indicators_from_df(hist)
+        # pct vs month start
+        try:
+            now = datetime.utcnow()
+            month_start = datetime(now.year, now.month, 1)
+            hist_month = tk.history(start=month_start.strftime("%Y-%m-%d"), end=(now + timedelta(days=1)).strftime("%Y-%m-%d"))
+            if hist_month is not None and not hist_month.empty:
+                month_open = float(hist_month['Open'].iloc[0])
+                info['pct_vs_month_start'] = (info['last'] / month_open - 1) * 100 if month_open != 0 else None
+            else:
+                info['pct_vs_month_start'] = None
+        except Exception:
+            info['pct_vs_month_start'] = None
+
+        # 52w high/low
+        last_52 = hist.tail(252) if len(hist) >= 252 else hist
+        info['52w_high'] = float(last_52['High'].max())
+        info['52w_low']  = float(last_52['Low'].min())
+    except Exception as e:
+        print("Error fetching index:", e)
+        return None
+
+    # breadth & top contributors if vn30 tickers provided
+    if vn30_tickers:
+        adv = dec = neu = 0
+        contribs = []
+        for t in vn30_tickers:
+            try:
+                tk = yf.Ticker(t)
+                h = tk.history(period='7d', auto_adjust=False)
+                if h is None or h.empty:
+                    continue
