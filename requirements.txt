@@ -1,2 +1,4 @@
 yfinance
 requests
+pandas
+vnstock  # optional: install only if you want expanded VN-specific data
