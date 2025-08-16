@@ -1,7 +1,7 @@
 name: NotifyStockTelegram
 on:
   schedule:
-    - cron: '*/5 * * * *'  # runs every 5 minutes (UTC)
+    - cron: '*/5 9-15 * * 1-5'  # runs every 5 minutes, Mon-Fri, 9am-3pm UTC
   workflow_dispatch:  # allow manual run
 jobs:
   send:
