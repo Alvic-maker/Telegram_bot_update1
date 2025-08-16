@@ -1,340 +1,340 @@
-2025-08-16T14:34:45.7613714Z Current runner version: '2.327.1'
-2025-08-16T14:34:45.7645419Z ##[group]Runner Image Provisioner
-2025-08-16T14:34:45.7646852Z Hosted Compute Agent
-2025-08-16T14:34:45.7647805Z Version: 20250812.370
-2025-08-16T14:34:45.7648848Z Commit: 4a2b2bf7520004e3e907c2150c8cabe342a3da32
-2025-08-16T14:34:45.7650352Z Build Date: 2025-08-12T16:08:14Z
-2025-08-16T14:34:45.7651403Z ##[endgroup]
-2025-08-16T14:34:45.7652417Z ##[group]Operating System
-2025-08-16T14:34:45.7653380Z Ubuntu
-2025-08-16T14:34:45.7654217Z 24.04.2
-2025-08-16T14:34:45.7655000Z LTS
-2025-08-16T14:34:45.7655811Z ##[endgroup]
-2025-08-16T14:34:45.7656680Z ##[group]Runner Image
-2025-08-16T14:34:45.7657695Z Image: ubuntu-24.04
-2025-08-16T14:34:45.7658562Z Version: 20250810.1.0
-2025-08-16T14:34:45.7660696Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250810.1/images/ubuntu/Ubuntu2404-Readme.md
-2025-08-16T14:34:45.7663447Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250810.1
-2025-08-16T14:34:45.7665438Z ##[endgroup]
-2025-08-16T14:34:45.7667333Z ##[group]GITHUB_TOKEN Permissions
-2025-08-16T14:34:45.7670526Z Contents: read
-2025-08-16T14:34:45.7671421Z Metadata: read
-2025-08-16T14:34:45.7672320Z Packages: read
-2025-08-16T14:34:45.7673355Z ##[endgroup]
-2025-08-16T14:34:45.7676702Z Secret source: Actions
-2025-08-16T14:34:45.7677860Z Prepare workflow directory
-2025-08-16T14:34:45.8093349Z Prepare all required actions
-2025-08-16T14:34:45.8149945Z Getting action download info
-2025-08-16T14:34:46.0996833Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
-2025-08-16T14:34:46.4975487Z Download action repository 'actions/setup-python@v4' (SHA:7f4fc3e22c37d6ff65e88745f38bd3157c663f7c)
-2025-08-16T14:34:47.0111970Z Complete job name: send
-2025-08-16T14:34:47.0784102Z ##[group]Run actions/checkout@v4
-2025-08-16T14:34:47.0785028Z with:
-2025-08-16T14:34:47.0785565Z   repository: Alvic-maker/Telegram_bot_update1
-2025-08-16T14:34:47.0786406Z   token: ***
-2025-08-16T14:34:47.0786895Z   ssh-strict: true
-2025-08-16T14:34:47.0787355Z   ssh-user: git
-2025-08-16T14:34:47.0787844Z   persist-credentials: true
-2025-08-16T14:34:47.0788369Z   clean: true
-2025-08-16T14:34:47.0788842Z   sparse-checkout-cone-mode: true
-2025-08-16T14:34:47.0789413Z   fetch-depth: 1
-2025-08-16T14:34:47.0790097Z   fetch-tags: false
-2025-08-16T14:34:47.0790570Z   show-progress: true
-2025-08-16T14:34:47.0791055Z   lfs: false
-2025-08-16T14:34:47.0791508Z   submodules: false
-2025-08-16T14:34:47.0791990Z   set-safe-directory: true
-2025-08-16T14:34:47.0792797Z ##[endgroup]
-2025-08-16T14:34:47.1877814Z Syncing repository: Alvic-maker/Telegram_bot_update1
-2025-08-16T14:34:47.1881450Z ##[group]Getting Git version info
-2025-08-16T14:34:47.1883279Z Working directory is '/home/runner/work/Telegram_bot_update1/Telegram_bot_update1'
-2025-08-16T14:34:47.1884748Z [command]/usr/bin/git version
-2025-08-16T14:34:47.1954518Z git version 2.50.1
-2025-08-16T14:34:47.1980960Z ##[endgroup]
-2025-08-16T14:34:47.1996722Z Temporarily overriding HOME='/home/runner/work/_temp/2c2ad7b6-b7f6-4448-8ec8-c16a51afaa7b' before making global git config changes
-2025-08-16T14:34:47.1999891Z Adding repository directory to the temporary git global config as a safe directory
-2025-08-16T14:34:47.2010708Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Telegram_bot_update1/Telegram_bot_update1
-2025-08-16T14:34:47.2048798Z Deleting the contents of '/home/runner/work/Telegram_bot_update1/Telegram_bot_update1'
-2025-08-16T14:34:47.2052480Z ##[group]Initializing the repository
-2025-08-16T14:34:47.2057751Z [command]/usr/bin/git init /home/runner/work/Telegram_bot_update1/Telegram_bot_update1
-2025-08-16T14:34:47.2125961Z hint: Using 'master' as the name for the initial branch. This default branch name
-2025-08-16T14:34:47.2127662Z hint: is subject to change. To configure the initial branch name to use in all
-2025-08-16T14:34:47.2128667Z hint: of your new repositories, which will suppress this warning, call:
-2025-08-16T14:34:47.2130283Z hint:
-2025-08-16T14:34:47.2131418Z hint: 	git config --global init.defaultBranch <name>
-2025-08-16T14:34:47.2132712Z hint:
-2025-08-16T14:34:47.2133963Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
-2025-08-16T14:34:47.2135922Z hint: 'development'. The just-created branch can be renamed via this command:
-2025-08-16T14:34:47.2137545Z hint:
-2025-08-16T14:34:47.2138379Z hint: 	git branch -m <name>
-2025-08-16T14:34:47.2139291Z hint:
-2025-08-16T14:34:47.2140728Z hint: Disable this message with "git config set advice.defaultBranchName false"
-2025-08-16T14:34:47.2143175Z Initialized empty Git repository in /home/runner/work/Telegram_bot_update1/Telegram_bot_update1/.git/
-2025-08-16T14:34:47.2146912Z [command]/usr/bin/git remote add origin https://github.com/Alvic-maker/Telegram_bot_update1
-2025-08-16T14:34:47.2179502Z ##[endgroup]
-2025-08-16T14:34:47.2181218Z ##[group]Disabling automatic garbage collection
-2025-08-16T14:34:47.2184279Z [command]/usr/bin/git config --local gc.auto 0
-2025-08-16T14:34:47.2213291Z ##[endgroup]
-2025-08-16T14:34:47.2214814Z ##[group]Setting up auth
-2025-08-16T14:34:47.2220969Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2025-08-16T14:34:47.2251809Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2025-08-16T14:34:47.2584190Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2025-08-16T14:34:47.2614843Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2025-08-16T14:34:47.2833327Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2025-08-16T14:34:47.2867804Z ##[endgroup]
-2025-08-16T14:34:47.2869363Z ##[group]Fetching the repository
-2025-08-16T14:34:47.2885426Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b119c58a9cb830aa136cb47f468605eb7430cbac:refs/remotes/origin/main
-2025-08-16T14:34:47.5024906Z From https://github.com/Alvic-maker/Telegram_bot_update1
-2025-08-16T14:34:47.5028706Z  * [new ref]         b119c58a9cb830aa136cb47f468605eb7430cbac -> origin/main
-2025-08-16T14:34:47.5054200Z ##[endgroup]
-2025-08-16T14:34:47.5055907Z ##[group]Determining the checkout info
-2025-08-16T14:34:47.5057417Z ##[endgroup]
-2025-08-16T14:34:47.5061767Z [command]/usr/bin/git sparse-checkout disable
-2025-08-16T14:34:47.5101280Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
-2025-08-16T14:34:47.5129193Z ##[group]Checking out the ref
-2025-08-16T14:34:47.5132580Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
-2025-08-16T14:34:47.5178966Z Switched to a new branch 'main'
-2025-08-16T14:34:47.5182241Z branch 'main' set up to track 'origin/main'.
-2025-08-16T14:34:47.5189314Z ##[endgroup]
-2025-08-16T14:34:47.5222966Z [command]/usr/bin/git log -1 --format=%H
-2025-08-16T14:34:47.5244524Z b119c58a9cb830aa136cb47f468605eb7430cbac
-2025-08-16T14:34:47.5532940Z ##[group]Run actions/setup-python@v4
-2025-08-16T14:34:47.5534157Z with:
-2025-08-16T14:34:47.5535008Z   python-version: 3.11
-2025-08-16T14:34:47.5535998Z   check-latest: false
-2025-08-16T14:34:47.5537237Z   token: ***
-2025-08-16T14:34:47.5538140Z   update-environment: true
-2025-08-16T14:34:47.5539209Z   allow-prereleases: false
-2025-08-16T14:34:47.5540390Z ##[endgroup]
-2025-08-16T14:34:47.7210555Z ##[group]Installed versions
-2025-08-16T14:34:47.7327623Z Successfully set up CPython (3.11.13)
-2025-08-16T14:34:47.7330767Z ##[endgroup]
-2025-08-16T14:34:47.7493887Z ##[group]Run python -m pip install --upgrade pip
-2025-08-16T14:34:47.7495323Z [36;1mpython -m pip install --upgrade pip[0m
-2025-08-16T14:34:47.7496589Z [36;1mpip install -r requirements.txt[0m
-2025-08-16T14:34:47.7704577Z shell: /usr/bin/bash -e {0}
-2025-08-16T14:34:47.7705786Z env:
-2025-08-16T14:34:47.7706918Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:34:47.7708627Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib/pkgconfig
-2025-08-16T14:34:47.7710618Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:34:47.7712157Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:34:47.7713714Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:34:47.7715247Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib
-2025-08-16T14:34:47.7716523Z ##[endgroup]
-2025-08-16T14:34:50.4963684Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages (25.2)
-2025-08-16T14:34:51.0858774Z Collecting yfinance (from -r requirements.txt (line 1))
-2025-08-16T14:34:51.2458333Z   Downloading yfinance-0.2.65-py2.py3-none-any.whl.metadata (5.8 kB)
-2025-08-16T14:34:51.3656467Z Collecting pandas (from -r requirements.txt (line 2))
-2025-08-16T14:34:51.3853766Z   Downloading pandas-2.3.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (91 kB)
-2025-08-16T14:34:51.6132969Z Collecting numpy (from -r requirements.txt (line 3))
-2025-08-16T14:34:51.6334454Z   Downloading numpy-2.3.2-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
-2025-08-16T14:34:51.6713837Z Collecting requests (from -r requirements.txt (line 4))
-2025-08-16T14:34:51.6907156Z   Downloading requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
-2025-08-16T14:34:51.7080716Z Collecting beautifulsoup4 (from -r requirements.txt (line 5))
-2025-08-16T14:34:51.7271752Z   Downloading beautifulsoup4-4.13.4-py3-none-any.whl.metadata (3.8 kB)
-2025-08-16T14:34:51.7601495Z Collecting vnstock3 (from -r requirements.txt (line 6))
-2025-08-16T14:34:51.8003360Z   Downloading vnstock3-3.2.1-py3-none-any.whl.metadata (23 kB)
-2025-08-16T14:34:51.8317004Z Collecting multitasking>=0.0.7 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:34:51.8510147Z   Downloading multitasking-0.0.12.tar.gz (19 kB)
-2025-08-16T14:34:51.8961753Z   Installing build dependencies: started
-2025-08-16T14:35:07.7583170Z   Installing build dependencies: finished with status 'done'
-2025-08-16T14:35:07.7588437Z   Getting requirements to build wheel: started
-2025-08-16T14:35:08.1691366Z   Getting requirements to build wheel: finished with status 'done'
-2025-08-16T14:35:08.1703449Z   Preparing metadata (pyproject.toml): started
-2025-08-16T14:35:08.3453159Z   Preparing metadata (pyproject.toml): finished with status 'done'
-2025-08-16T14:35:08.3639870Z Collecting platformdirs>=2.0.0 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:08.3839088Z   Downloading platformdirs-4.3.8-py3-none-any.whl.metadata (12 kB)
-2025-08-16T14:35:08.4202038Z Collecting pytz>=2022.5 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:08.4394085Z   Downloading pytz-2025.2-py2.py3-none-any.whl.metadata (22 kB)
-2025-08-16T14:35:08.4813792Z Collecting frozendict>=2.3.4 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:08.5007233Z   Downloading frozendict-2.4.6-py311-none-any.whl.metadata (23 kB)
-2025-08-16T14:35:08.5223499Z Collecting peewee>=3.16.2 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:08.5420978Z   Downloading peewee-3.18.2.tar.gz (949 kB)
-2025-08-16T14:35:08.5975697Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 949.2/949.2 kB 21.6 MB/s  0:00:00
-2025-08-16T14:35:08.6747676Z   Installing build dependencies: started
-2025-08-16T14:35:09.4694536Z   Installing build dependencies: finished with status 'done'
-2025-08-16T14:35:09.4700153Z   Getting requirements to build wheel: started
-2025-08-16T14:35:09.9346472Z   Getting requirements to build wheel: finished with status 'done'
-2025-08-16T14:35:09.9355410Z   Preparing metadata (pyproject.toml): started
-2025-08-16T14:35:10.1389228Z   Preparing metadata (pyproject.toml): finished with status 'done'
-2025-08-16T14:35:10.1858284Z Collecting curl_cffi>=0.7 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:10.2053586Z   Downloading curl_cffi-0.13.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (13 kB)
-2025-08-16T14:35:10.3836968Z Collecting protobuf>=3.19.0 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:10.4032717Z   Downloading protobuf-6.32.0-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
-2025-08-16T14:35:10.4894328Z Collecting websockets>=13.0 (from yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:10.5092816Z   Downloading websockets-15.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
-2025-08-16T14:35:10.5334480Z Collecting python-dateutil>=2.8.2 (from pandas->-r requirements.txt (line 2))
-2025-08-16T14:35:10.5527444Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
-2025-08-16T14:35:10.5732068Z Collecting tzdata>=2022.7 (from pandas->-r requirements.txt (line 2))
-2025-08-16T14:35:10.5924894Z   Downloading tzdata-2025.2-py2.py3-none-any.whl.metadata (1.4 kB)
-2025-08-16T14:35:10.6690670Z Collecting charset_normalizer<4,>=2 (from requests->-r requirements.txt (line 4))
-2025-08-16T14:35:10.6886042Z   Downloading charset_normalizer-3.4.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (36 kB)
-2025-08-16T14:35:10.7070095Z Collecting idna<4,>=2.5 (from requests->-r requirements.txt (line 4))
-2025-08-16T14:35:10.7263165Z   Downloading idna-3.10-py3-none-any.whl.metadata (10 kB)
-2025-08-16T14:35:10.7565838Z Collecting urllib3<3,>=1.21.1 (from requests->-r requirements.txt (line 4))
-2025-08-16T14:35:10.7763188Z   Downloading urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
-2025-08-16T14:35:10.8011731Z Collecting certifi>=2017.4.17 (from requests->-r requirements.txt (line 4))
-2025-08-16T14:35:10.8204795Z   Downloading certifi-2025.8.3-py3-none-any.whl.metadata (2.4 kB)
-2025-08-16T14:35:10.8390198Z Collecting soupsieve>1.2 (from beautifulsoup4->-r requirements.txt (line 5))
-2025-08-16T14:35:10.8582720Z   Downloading soupsieve-2.7-py3-none-any.whl.metadata (4.6 kB)
-2025-08-16T14:35:10.8770818Z Collecting typing-extensions>=4.0.0 (from beautifulsoup4->-r requirements.txt (line 5))
-2025-08-16T14:35:10.8962359Z   Downloading typing_extensions-4.14.1-py3-none-any.whl.metadata (3.0 kB)
-2025-08-16T14:35:10.9314677Z Collecting vnai>=2.0 (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:10.9509228Z   Downloading vnai-2.1.9-py3-none-any.whl.metadata (662 bytes)
-2025-08-16T14:35:10.9696201Z Collecting openpyxl (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:10.9887567Z   Downloading openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
-2025-08-16T14:35:11.0980383Z Collecting pydantic (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.1173681Z   Downloading pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
-2025-08-16T14:35:11.2052726Z Collecting psutil (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.2247874Z   Downloading psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (22 kB)
-2025-08-16T14:35:11.2419830Z Collecting fake_useragent (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.2610959Z   Downloading fake_useragent-2.2.0-py3-none-any.whl.metadata (17 kB)
-2025-08-16T14:35:11.2932258Z Collecting vnstock_ezchart (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.3122618Z   Downloading vnstock_ezchart-0.0.2-py3-none-any.whl.metadata (6.6 kB)
-2025-08-16T14:35:11.3311837Z Collecting click (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.3503979Z   Downloading click-8.2.1-py3-none-any.whl.metadata (2.5 kB)
-2025-08-16T14:35:11.3645290Z Collecting seaborn (from vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.3836534Z   Downloading seaborn-0.13.2-py3-none-any.whl.metadata (5.4 kB)
-2025-08-16T14:35:11.4815301Z Collecting cffi>=1.12.0 (from curl_cffi>=0.7->yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:11.5014743Z   Downloading cffi-1.17.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.5 kB)
-2025-08-16T14:35:11.5190253Z Collecting pycparser (from cffi>=1.12.0->curl_cffi>=0.7->yfinance->-r requirements.txt (line 1))
-2025-08-16T14:35:11.5385137Z   Downloading pycparser-2.22-py3-none-any.whl.metadata (943 bytes)
-2025-08-16T14:35:11.5568966Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas->-r requirements.txt (line 2))
-2025-08-16T14:35:11.5761478Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
-2025-08-16T14:35:11.6035142Z Collecting et-xmlfile (from openpyxl->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.6227880Z   Downloading et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
-2025-08-16T14:35:11.6361606Z Collecting annotated-types>=0.6.0 (from pydantic->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:11.6553785Z   Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
-2025-08-16T14:35:12.2923563Z Collecting pydantic-core==2.33.2 (from pydantic->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.3118928Z   Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
-2025-08-16T14:35:12.3268987Z Collecting typing-inspection>=0.4.0 (from pydantic->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.3461220Z   Downloading typing_inspection-0.4.1-py3-none-any.whl.metadata (2.6 kB)
-2025-08-16T14:35:12.5433720Z Collecting matplotlib!=3.6.1,>=3.4 (from seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.5629936Z   Downloading matplotlib-3.10.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (11 kB)
-2025-08-16T14:35:12.6310487Z Collecting contourpy>=1.0.1 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.6501611Z   Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)
-2025-08-16T14:35:12.6626964Z Collecting cycler>=0.10 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.6817964Z   Downloading cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
-2025-08-16T14:35:12.8154058Z Collecting fonttools>=4.22.0 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.8348041Z   Downloading fonttools-4.59.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (108 kB)
-2025-08-16T14:35:12.9038387Z Collecting kiwisolver>=1.3.1 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.9233644Z   Downloading kiwisolver-1.4.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.3 kB)
-2025-08-16T14:35:12.9540567Z Collecting packaging>=20.0 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:12.9750848Z   Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
-2025-08-16T14:35:13.1805760Z Collecting pillow>=8 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.2000799Z   Downloading pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.0 kB)
-2025-08-16T14:35:13.2280771Z Collecting pyparsing>=2.3.1 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.2472187Z   Downloading pyparsing-3.2.3-py3-none-any.whl.metadata (5.0 kB)
-2025-08-16T14:35:13.2845386Z Collecting squarify (from vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.3050616Z   Downloading squarify-0.4.4-py3-none-any.whl.metadata (600 bytes)
-2025-08-16T14:35:13.3331269Z Collecting wordcloud (from vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.3527291Z   Downloading wordcloud-1.9.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.4 kB)
-2025-08-16T14:35:13.3723553Z Collecting vnstock (from vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.3917523Z   Downloading vnstock-3.2.6-py3-none-any.whl.metadata (42 kB)
-2025-08-16T14:35:13.4298840Z Collecting importlib-metadata>=1.0 (from vnstock->vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.4491177Z   Downloading importlib_metadata-8.7.0-py3-none-any.whl.metadata (4.8 kB)
-2025-08-16T14:35:13.4679788Z Collecting tenacity (from vnstock->vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.4872989Z   Downloading tenacity-9.1.2-py3-none-any.whl.metadata (1.2 kB)
-2025-08-16T14:35:13.5088467Z Collecting zipp>=3.20 (from importlib-metadata>=1.0->vnstock->vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
-2025-08-16T14:35:13.5281120Z   Downloading zipp-3.23.0-py3-none-any.whl.metadata (3.6 kB)
-2025-08-16T14:35:13.5715410Z Downloading yfinance-0.2.65-py2.py3-none-any.whl (119 kB)
-2025-08-16T14:35:13.5933857Z Downloading pandas-2.3.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.4 MB)
-2025-08-16T14:35:13.6829415Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.4/12.4 MB 140.6 MB/s  0:00:00
-2025-08-16T14:35:13.7025832Z Downloading numpy-2.3.2-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.9 MB)
-2025-08-16T14:35:13.7946647Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 186.0 MB/s  0:00:00
-2025-08-16T14:35:13.8146236Z Downloading requests-2.32.4-py3-none-any.whl (64 kB)
-2025-08-16T14:35:13.8367503Z Downloading charset_normalizer-3.4.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (150 kB)
-2025-08-16T14:35:13.8588889Z Downloading idna-3.10-py3-none-any.whl (70 kB)
-2025-08-16T14:35:13.8804909Z Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
-2025-08-16T14:35:13.9026695Z Downloading beautifulsoup4-4.13.4-py3-none-any.whl (187 kB)
-2025-08-16T14:35:13.9595341Z Downloading vnstock3-3.2.1-py3-none-any.whl (121 kB)
-2025-08-16T14:35:13.9812849Z Downloading certifi-2025.8.3-py3-none-any.whl (161 kB)
-2025-08-16T14:35:14.0035382Z Downloading curl_cffi-0.13.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (8.3 MB)
-2025-08-16T14:35:14.0553870Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 163.7 MB/s  0:00:00
-2025-08-16T14:35:14.0753283Z Downloading cffi-1.17.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (467 kB)
-2025-08-16T14:35:14.1003617Z Downloading frozendict-2.4.6-py311-none-any.whl (16 kB)
-2025-08-16T14:35:14.1220681Z Downloading platformdirs-4.3.8-py3-none-any.whl (18 kB)
-2025-08-16T14:35:14.1440022Z Downloading protobuf-6.32.0-cp39-abi3-manylinux2014_x86_64.whl (322 kB)
-2025-08-16T14:35:14.1668330Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
-2025-08-16T14:35:14.1904931Z Downloading pytz-2025.2-py2.py3-none-any.whl (509 kB)
-2025-08-16T14:35:14.2140483Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
-2025-08-16T14:35:14.2356352Z Downloading soupsieve-2.7-py3-none-any.whl (36 kB)
-2025-08-16T14:35:14.2571466Z Downloading typing_extensions-4.14.1-py3-none-any.whl (43 kB)
-2025-08-16T14:35:14.2794495Z Downloading tzdata-2025.2-py2.py3-none-any.whl (347 kB)
-2025-08-16T14:35:14.3055928Z Downloading vnai-2.1.9-py3-none-any.whl (25 kB)
-2025-08-16T14:35:14.3283496Z Downloading psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (277 kB)
-2025-08-16T14:35:14.3583912Z Downloading websockets-15.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (182 kB)
-2025-08-16T14:35:14.3740605Z Downloading click-8.2.1-py3-none-any.whl (102 kB)
-2025-08-16T14:35:14.3961652Z Downloading fake_useragent-2.2.0-py3-none-any.whl (161 kB)
-2025-08-16T14:35:14.4181115Z Downloading openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
-2025-08-16T14:35:14.4404232Z Downloading et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
-2025-08-16T14:35:14.4619153Z Downloading pycparser-2.22-py3-none-any.whl (117 kB)
-2025-08-16T14:35:14.4841411Z Downloading pydantic-2.11.7-py3-none-any.whl (444 kB)
-2025-08-16T14:35:14.5075208Z Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
-2025-08-16T14:35:14.5230909Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 143.8 MB/s  0:00:00
-2025-08-16T14:35:14.5423594Z Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
-2025-08-16T14:35:14.5639435Z Downloading typing_inspection-0.4.1-py3-none-any.whl (14 kB)
-2025-08-16T14:35:14.5856450Z Downloading seaborn-0.13.2-py3-none-any.whl (294 kB)
-2025-08-16T14:35:14.6098555Z Downloading matplotlib-3.10.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.7 MB)
-2025-08-16T14:35:14.6881660Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.7/8.7 MB 111.1 MB/s  0:00:00
-2025-08-16T14:35:14.7076601Z Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (355 kB)
-2025-08-16T14:35:14.7307720Z Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
-2025-08-16T14:35:14.7520466Z Downloading fonttools-4.59.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.0 MB)
-2025-08-16T14:35:14.7818127Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.0/5.0 MB 172.6 MB/s  0:00:00
-2025-08-16T14:35:14.8016744Z Downloading kiwisolver-1.4.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
-2025-08-16T14:35:14.8107501Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 172.3 MB/s  0:00:00
-2025-08-16T14:35:14.8579376Z Downloading packaging-25.0-py3-none-any.whl (66 kB)
-2025-08-16T14:35:14.8801361Z Downloading pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.6 MB)
-2025-08-16T14:35:14.9168533Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 185.3 MB/s  0:00:00
-2025-08-16T14:35:14.9362658Z Downloading pyparsing-3.2.3-py3-none-any.whl (111 kB)
-2025-08-16T14:35:14.9580132Z Downloading vnstock_ezchart-0.0.2-py3-none-any.whl (14 kB)
-2025-08-16T14:35:14.9791603Z Downloading squarify-0.4.4-py3-none-any.whl (4.1 kB)
-2025-08-16T14:35:15.0010368Z Downloading vnstock-3.2.6-py3-none-any.whl (121 kB)
-2025-08-16T14:35:15.0225938Z Downloading importlib_metadata-8.7.0-py3-none-any.whl (27 kB)
-2025-08-16T14:35:15.0437977Z Downloading zipp-3.23.0-py3-none-any.whl (10 kB)
-2025-08-16T14:35:15.0651466Z Downloading tenacity-9.1.2-py3-none-any.whl (28 kB)
-2025-08-16T14:35:15.0872463Z Downloading wordcloud-1.9.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (547 kB)
-2025-08-16T14:35:15.0932614Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 547.9/547.9 kB 80.8 MB/s  0:00:00
-2025-08-16T14:35:15.1919117Z Building wheels for collected packages: multitasking, peewee
-2025-08-16T14:35:15.1927327Z   Building wheel for multitasking (pyproject.toml): started
-2025-08-16T14:35:15.3845413Z   Building wheel for multitasking (pyproject.toml): finished with status 'done'
-2025-08-16T14:35:15.3852572Z   Created wheel for multitasking: filename=multitasking-0.0.12-py3-none-any.whl size=15636 sha256=648db750a8d5902da0c64323ac388cb2b6c6f21a31438ffd73336206798af2e9
-2025-08-16T14:35:15.3854512Z   Stored in directory: /home/runner/.cache/pip/wheels/42/d6/84/bf57a755f4569494cd00de4bb46ef064874823f4d19c82e960
-2025-08-16T14:35:15.3884503Z   Building wheel for peewee (pyproject.toml): started
-2025-08-16T14:35:27.1652185Z   Building wheel for peewee (pyproject.toml): finished with status 'done'
-2025-08-16T14:35:27.1665095Z   Created wheel for peewee: filename=peewee-3.18.2-cp311-cp311-linux_x86_64.whl size=1064022 sha256=a1628d953aaeabc62291131fe5a041b7511cb72b28ff6be11994e43ec6dd956c
-2025-08-16T14:35:27.1666561Z   Stored in directory: /home/runner/.cache/pip/wheels/28/84/61/758d1bd7b9c9d700158c8642a8aff2a9bf2e1ae69641c40784
-2025-08-16T14:35:27.1686207Z Successfully built multitasking peewee
-2025-08-16T14:35:27.2776865Z Installing collected packages: squarify, pytz, peewee, multitasking, zipp, websockets, urllib3, tzdata, typing-extensions, tenacity, soupsieve, six, pyparsing, pycparser, psutil, protobuf, platformdirs, pillow, packaging, numpy, kiwisolver, idna, frozendict, fonttools, fake_useragent, et-xmlfile, cycler, click, charset_normalizer, certifi, annotated-types, typing-inspection, requests, python-dateutil, pydantic-core, openpyxl, importlib-metadata, contourpy, cffi, beautifulsoup4, vnai, pydantic, pandas, matplotlib, curl_cffi, yfinance, wordcloud, seaborn, vnstock, vnstock_ezchart, vnstock3
-2025-08-16T14:35:38.2712129Z 
-2025-08-16T14:35:38.2742331Z Successfully installed annotated-types-0.7.0 beautifulsoup4-4.13.4 certifi-2025.8.3 cffi-1.17.1 charset_normalizer-3.4.3 click-8.2.1 contourpy-1.3.3 curl_cffi-0.13.0 cycler-0.12.1 et-xmlfile-2.0.0 fake_useragent-2.2.0 fonttools-4.59.1 frozendict-2.4.6 idna-3.10 importlib-metadata-8.7.0 kiwisolver-1.4.9 matplotlib-3.10.5 multitasking-0.0.12 numpy-2.3.2 openpyxl-3.1.5 packaging-25.0 pandas-2.3.1 peewee-3.18.2 pillow-11.3.0 platformdirs-4.3.8 protobuf-6.32.0 psutil-7.0.0 pycparser-2.22 pydantic-2.11.7 pydantic-core-2.33.2 pyparsing-3.2.3 python-dateutil-2.9.0.post0 pytz-2025.2 requests-2.32.4 seaborn-0.13.2 six-1.17.0 soupsieve-2.7 squarify-0.4.4 tenacity-9.1.2 typing-extensions-4.14.1 typing-inspection-0.4.1 tzdata-2025.2 urllib3-2.5.0 vnai-2.1.9 vnstock-3.2.6 vnstock3-3.2.1 vnstock_ezchart-0.0.2 websockets-15.0.1 wordcloud-1.9.4 yfinance-0.2.65 zipp-3.23.0
-2025-08-16T14:35:38.6695677Z ##[group]Run python bot.py
-2025-08-16T14:35:38.6695956Z [36;1mpython bot.py[0m
-2025-08-16T14:35:38.6739156Z shell: /usr/bin/bash -e {0}
-2025-08-16T14:35:38.6739380Z env:
-2025-08-16T14:35:38.6739735Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:35:38.6740156Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib/pkgconfig
-2025-08-16T14:35:38.6740555Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:35:38.6740900Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:35:38.6741253Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
-2025-08-16T14:35:38.6741599Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib
-2025-08-16T14:35:38.6742085Z   BOT_TOKEN: ***
-2025-08-16T14:35:38.6742287Z   CHAT_ID: ***
-2025-08-16T14:35:38.6742463Z ##[endgroup]
-2025-08-16T14:35:38.6890810Z   File "/home/runner/work/Telegram_bot_update1/Telegram_bot_update1/bot.py", line 16
-2025-08-16T14:35:38.6891563Z     print(f\"[DEBUG] {msg}\", flush=True)
-2025-08-16T14:35:38.6891967Z             ^
-2025-08-16T14:35:38.6892450Z SyntaxError: unexpected character after line continuation character
-2025-08-16T14:35:38.6922092Z ##[error]Process completed with exit code 1.
-2025-08-16T14:35:38.7015837Z Post job cleanup.
-2025-08-16T14:35:38.7937713Z [command]/usr/bin/git version
-2025-08-16T14:35:38.7973562Z git version 2.50.1
-2025-08-16T14:35:38.8015279Z Temporarily overriding HOME='/home/runner/work/_temp/15cf140f-8853-40ba-b5a4-41e812885209' before making global git config changes
-2025-08-16T14:35:38.8016447Z Adding repository directory to the temporary git global config as a safe directory
-2025-08-16T14:35:38.8021132Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Telegram_bot_update1/Telegram_bot_update1
-2025-08-16T14:35:38.8056442Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2025-08-16T14:35:38.8088630Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2025-08-16T14:35:38.8310577Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2025-08-16T14:35:38.8330352Z http.https://github.com/.extraheader
-2025-08-16T14:35:38.8343024Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2025-08-16T14:35:38.8372198Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2025-08-16T14:35:38.8697022Z Cleaning up orphan processes
+2025-08-16T14:44:02.8925397Z Current runner version: '2.327.1'
+2025-08-16T14:44:02.8948373Z ##[group]Runner Image Provisioner
+2025-08-16T14:44:02.8949173Z Hosted Compute Agent
+2025-08-16T14:44:02.8949808Z Version: 20250812.370
+2025-08-16T14:44:02.8950440Z Commit: 4a2b2bf7520004e3e907c2150c8cabe342a3da32
+2025-08-16T14:44:02.8951098Z Build Date: 2025-08-12T16:08:14Z
+2025-08-16T14:44:02.8951725Z ##[endgroup]
+2025-08-16T14:44:02.8952288Z ##[group]Operating System
+2025-08-16T14:44:02.8952830Z Ubuntu
+2025-08-16T14:44:02.8953288Z 24.04.2
+2025-08-16T14:44:02.8953756Z LTS
+2025-08-16T14:44:02.8954402Z ##[endgroup]
+2025-08-16T14:44:02.8954929Z ##[group]Runner Image
+2025-08-16T14:44:02.8955530Z Image: ubuntu-24.04
+2025-08-16T14:44:02.8956049Z Version: 20250810.1.0
+2025-08-16T14:44:02.8957067Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250810.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-08-16T14:44:02.8958654Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250810.1
+2025-08-16T14:44:02.8959758Z ##[endgroup]
+2025-08-16T14:44:02.8960831Z ##[group]GITHUB_TOKEN Permissions
+2025-08-16T14:44:02.8962729Z Contents: read
+2025-08-16T14:44:02.8963272Z Metadata: read
+2025-08-16T14:44:02.8963791Z Packages: read
+2025-08-16T14:44:02.8964558Z ##[endgroup]
+2025-08-16T14:44:02.8966858Z Secret source: Actions
+2025-08-16T14:44:02.8967771Z Prepare workflow directory
+2025-08-16T14:44:02.9281593Z Prepare all required actions
+2025-08-16T14:44:02.9318574Z Getting action download info
+2025-08-16T14:44:03.3504472Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-08-16T14:44:03.9238630Z Download action repository 'actions/setup-python@v4' (SHA:7f4fc3e22c37d6ff65e88745f38bd3157c663f7c)
+2025-08-16T14:44:04.5631326Z Complete job name: send
+2025-08-16T14:44:04.6314022Z ##[group]Run actions/checkout@v4
+2025-08-16T14:44:04.6315336Z with:
+2025-08-16T14:44:04.6315864Z   repository: Alvic-maker/Telegram_bot_update1
+2025-08-16T14:44:04.6316693Z   token: ***
+2025-08-16T14:44:04.6317168Z   ssh-strict: true
+2025-08-16T14:44:04.6317615Z   ssh-user: git
+2025-08-16T14:44:04.6318085Z   persist-credentials: true
+2025-08-16T14:44:04.6318611Z   clean: true
+2025-08-16T14:44:04.6319072Z   sparse-checkout-cone-mode: true
+2025-08-16T14:44:04.6319629Z   fetch-depth: 1
+2025-08-16T14:44:04.6320180Z   fetch-tags: false
+2025-08-16T14:44:04.6320653Z   show-progress: true
+2025-08-16T14:44:04.6321132Z   lfs: false
+2025-08-16T14:44:04.6321566Z   submodules: false
+2025-08-16T14:44:04.6322041Z   set-safe-directory: true
+2025-08-16T14:44:04.6322809Z ##[endgroup]
+2025-08-16T14:44:04.7373071Z Syncing repository: Alvic-maker/Telegram_bot_update1
+2025-08-16T14:44:04.7375459Z ##[group]Getting Git version info
+2025-08-16T14:44:04.7376522Z Working directory is '/home/runner/work/Telegram_bot_update1/Telegram_bot_update1'
+2025-08-16T14:44:04.7377940Z [command]/usr/bin/git version
+2025-08-16T14:44:04.7406804Z git version 2.50.1
+2025-08-16T14:44:04.7432474Z ##[endgroup]
+2025-08-16T14:44:04.7446315Z Temporarily overriding HOME='/home/runner/work/_temp/9c838afa-1fbe-48a4-9a22-e01f0257c940' before making global git config changes
+2025-08-16T14:44:04.7447912Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-16T14:44:04.7458990Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Telegram_bot_update1/Telegram_bot_update1
+2025-08-16T14:44:04.7491421Z Deleting the contents of '/home/runner/work/Telegram_bot_update1/Telegram_bot_update1'
+2025-08-16T14:44:04.7494852Z ##[group]Initializing the repository
+2025-08-16T14:44:04.7498835Z [command]/usr/bin/git init /home/runner/work/Telegram_bot_update1/Telegram_bot_update1
+2025-08-16T14:44:04.7554585Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-08-16T14:44:04.7556638Z hint: is subject to change. To configure the initial branch name to use in all
+2025-08-16T14:44:04.7558179Z hint: of your new repositories, which will suppress this warning, call:
+2025-08-16T14:44:04.7558953Z hint:
+2025-08-16T14:44:04.7559762Z hint: 	git config --global init.defaultBranch <name>
+2025-08-16T14:44:04.7560412Z hint:
+2025-08-16T14:44:04.7561026Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-08-16T14:44:04.7562564Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-08-16T14:44:04.7563368Z hint:
+2025-08-16T14:44:04.7563788Z hint: 	git branch -m <name>
+2025-08-16T14:44:04.7564536Z hint:
+2025-08-16T14:44:04.7565227Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-08-16T14:44:04.7566507Z Initialized empty Git repository in /home/runner/work/Telegram_bot_update1/Telegram_bot_update1/.git/
+2025-08-16T14:44:04.7569063Z [command]/usr/bin/git remote add origin https://github.com/Alvic-maker/Telegram_bot_update1
+2025-08-16T14:44:04.7598772Z ##[endgroup]
+2025-08-16T14:44:04.7600236Z ##[group]Disabling automatic garbage collection
+2025-08-16T14:44:04.7603418Z [command]/usr/bin/git config --local gc.auto 0
+2025-08-16T14:44:04.7632179Z ##[endgroup]
+2025-08-16T14:44:04.7633716Z ##[group]Setting up auth
+2025-08-16T14:44:04.7639909Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-16T14:44:04.7671154Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-16T14:44:04.7943807Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-16T14:44:04.7974676Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-16T14:44:04.8190472Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-08-16T14:44:04.8223544Z ##[endgroup]
+2025-08-16T14:44:04.8224707Z ##[group]Fetching the repository
+2025-08-16T14:44:04.8239955Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +49fb89440e20bc99eaa914b3bbea3eb6adfe919a:refs/remotes/origin/main
+2025-08-16T14:44:05.1772124Z From https://github.com/Alvic-maker/Telegram_bot_update1
+2025-08-16T14:44:05.1775488Z  * [new ref]         49fb89440e20bc99eaa914b3bbea3eb6adfe919a -> origin/main
+2025-08-16T14:44:05.1796957Z ##[endgroup]
+2025-08-16T14:44:05.1798547Z ##[group]Determining the checkout info
+2025-08-16T14:44:05.1800198Z ##[endgroup]
+2025-08-16T14:44:05.1804773Z [command]/usr/bin/git sparse-checkout disable
+2025-08-16T14:44:05.1845483Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2025-08-16T14:44:05.1875023Z ##[group]Checking out the ref
+2025-08-16T14:44:05.1878508Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-08-16T14:44:05.1926647Z Switched to a new branch 'main'
+2025-08-16T14:44:05.1929584Z branch 'main' set up to track 'origin/main'.
+2025-08-16T14:44:05.1936360Z ##[endgroup]
+2025-08-16T14:44:05.1975423Z [command]/usr/bin/git log -1 --format=%H
+2025-08-16T14:44:05.1998319Z 49fb89440e20bc99eaa914b3bbea3eb6adfe919a
+2025-08-16T14:44:05.2274678Z ##[group]Run actions/setup-python@v4
+2025-08-16T14:44:05.2275457Z with:
+2025-08-16T14:44:05.2275891Z   python-version: 3.11
+2025-08-16T14:44:05.2276458Z   check-latest: false
+2025-08-16T14:44:05.2277230Z   token: ***
+2025-08-16T14:44:05.2277718Z   update-environment: true
+2025-08-16T14:44:05.2278361Z   allow-prereleases: false
+2025-08-16T14:44:05.2278952Z ##[endgroup]
+2025-08-16T14:44:05.4027848Z ##[group]Installed versions
+2025-08-16T14:44:05.4110335Z Successfully set up CPython (3.11.13)
+2025-08-16T14:44:05.4112040Z ##[endgroup]
+2025-08-16T14:44:05.4250077Z ##[group]Run python -m pip install --upgrade pip
+2025-08-16T14:44:05.4251187Z [36;1mpython -m pip install --upgrade pip[0m
+2025-08-16T14:44:05.4252119Z [36;1mpip install -r requirements.txt[0m
+2025-08-16T14:44:05.4331572Z shell: /usr/bin/bash -e {0}
+2025-08-16T14:44:05.4332436Z env:
+2025-08-16T14:44:05.4333101Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:05.4334664Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib/pkgconfig
+2025-08-16T14:44:05.4336018Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:05.4337205Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:05.4338485Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:05.4339727Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib
+2025-08-16T14:44:05.4340670Z ##[endgroup]
+2025-08-16T14:44:05.9740197Z Requirement already satisfied: pip in /opt/hostedtoolcache/Python/3.11.13/x64/lib/python3.11/site-packages (25.2)
+2025-08-16T14:44:06.5566126Z Collecting yfinance (from -r requirements.txt (line 1))
+2025-08-16T14:44:06.5925575Z   Downloading yfinance-0.2.65-py2.py3-none-any.whl.metadata (5.8 kB)
+2025-08-16T14:44:06.7105244Z Collecting pandas (from -r requirements.txt (line 2))
+2025-08-16T14:44:06.7140036Z   Downloading pandas-2.3.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (91 kB)
+2025-08-16T14:44:06.9313377Z Collecting numpy (from -r requirements.txt (line 3))
+2025-08-16T14:44:06.9349252Z   Downloading numpy-2.3.2-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2025-08-16T14:44:06.9702539Z Collecting requests (from -r requirements.txt (line 4))
+2025-08-16T14:44:06.9734906Z   Downloading requests-2.32.4-py3-none-any.whl.metadata (4.9 kB)
+2025-08-16T14:44:06.9899622Z Collecting beautifulsoup4 (from -r requirements.txt (line 5))
+2025-08-16T14:44:06.9932881Z   Downloading beautifulsoup4-4.13.4-py3-none-any.whl.metadata (3.8 kB)
+2025-08-16T14:44:07.0773399Z Collecting vnstock3 (from -r requirements.txt (line 6))
+2025-08-16T14:44:07.0813217Z   Downloading vnstock3-3.2.1-py3-none-any.whl.metadata (23 kB)
+2025-08-16T14:44:07.1118138Z Collecting multitasking>=0.0.7 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:07.1173653Z   Downloading multitasking-0.0.12.tar.gz (19 kB)
+2025-08-16T14:44:07.1336994Z   Installing build dependencies: started
+2025-08-16T14:44:07.8869093Z   Installing build dependencies: finished with status 'done'
+2025-08-16T14:44:07.8873702Z   Getting requirements to build wheel: started
+2025-08-16T14:44:08.2383935Z   Getting requirements to build wheel: finished with status 'done'
+2025-08-16T14:44:08.2393759Z   Preparing metadata (pyproject.toml): started
+2025-08-16T14:44:08.4013243Z   Preparing metadata (pyproject.toml): finished with status 'done'
+2025-08-16T14:44:08.4194019Z Collecting platformdirs>=2.0.0 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:08.4231899Z   Downloading platformdirs-4.3.8-py3-none-any.whl.metadata (12 kB)
+2025-08-16T14:44:08.4573850Z Collecting pytz>=2022.5 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:08.4607474Z   Downloading pytz-2025.2-py2.py3-none-any.whl.metadata (22 kB)
+2025-08-16T14:44:08.4993703Z Collecting frozendict>=2.3.4 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:08.5030994Z   Downloading frozendict-2.4.6-py311-none-any.whl.metadata (23 kB)
+2025-08-16T14:44:08.5252301Z Collecting peewee>=3.16.2 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:08.5286432Z   Downloading peewee-3.18.2.tar.gz (949 kB)
+2025-08-16T14:44:08.5399031Z      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 949.2/949.2 kB 119.9 MB/s  0:00:00
+2025-08-16T14:44:08.6008727Z   Installing build dependencies: started
+2025-08-16T14:44:09.3360747Z   Installing build dependencies: finished with status 'done'
+2025-08-16T14:44:09.3365661Z   Getting requirements to build wheel: started
+2025-08-16T14:44:10.4083038Z   Getting requirements to build wheel: finished with status 'done'
+2025-08-16T14:44:10.4089982Z   Preparing metadata (pyproject.toml): started
+2025-08-16T14:44:10.6068222Z   Preparing metadata (pyproject.toml): finished with status 'done'
+2025-08-16T14:44:10.6529112Z Collecting curl_cffi>=0.7 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:10.6564896Z   Downloading curl_cffi-0.13.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (13 kB)
+2025-08-16T14:44:10.8273916Z Collecting protobuf>=3.19.0 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:10.8308096Z   Downloading protobuf-6.32.0-cp39-abi3-manylinux2014_x86_64.whl.metadata (593 bytes)
+2025-08-16T14:44:10.9119205Z Collecting websockets>=13.0 (from yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:10.9221312Z   Downloading websockets-15.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+2025-08-16T14:44:10.9424984Z Collecting python-dateutil>=2.8.2 (from pandas->-r requirements.txt (line 2))
+2025-08-16T14:44:10.9456905Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+2025-08-16T14:44:10.9638630Z Collecting tzdata>=2022.7 (from pandas->-r requirements.txt (line 2))
+2025-08-16T14:44:10.9671917Z   Downloading tzdata-2025.2-py2.py3-none-any.whl.metadata (1.4 kB)
+2025-08-16T14:44:11.0420963Z Collecting charset_normalizer<4,>=2 (from requests->-r requirements.txt (line 4))
+2025-08-16T14:44:11.0454656Z   Downloading charset_normalizer-3.4.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (36 kB)
+2025-08-16T14:44:11.0605203Z Collecting idna<4,>=2.5 (from requests->-r requirements.txt (line 4))
+2025-08-16T14:44:11.0636652Z   Downloading idna-3.10-py3-none-any.whl.metadata (10 kB)
+2025-08-16T14:44:11.0907891Z Collecting urllib3<3,>=1.21.1 (from requests->-r requirements.txt (line 4))
+2025-08-16T14:44:11.0941329Z   Downloading urllib3-2.5.0-py3-none-any.whl.metadata (6.5 kB)
+2025-08-16T14:44:11.1143687Z Collecting certifi>=2017.4.17 (from requests->-r requirements.txt (line 4))
+2025-08-16T14:44:11.1177802Z   Downloading certifi-2025.8.3-py3-none-any.whl.metadata (2.4 kB)
+2025-08-16T14:44:11.1356421Z Collecting soupsieve>1.2 (from beautifulsoup4->-r requirements.txt (line 5))
+2025-08-16T14:44:11.1388509Z   Downloading soupsieve-2.7-py3-none-any.whl.metadata (4.6 kB)
+2025-08-16T14:44:11.1557708Z Collecting typing-extensions>=4.0.0 (from beautifulsoup4->-r requirements.txt (line 5))
+2025-08-16T14:44:11.1588759Z   Downloading typing_extensions-4.14.1-py3-none-any.whl.metadata (3.0 kB)
+2025-08-16T14:44:11.2445016Z Collecting vnai>=2.0 (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.2484839Z   Downloading vnai-2.1.9-py3-none-any.whl.metadata (662 bytes)
+2025-08-16T14:44:11.2680545Z Collecting openpyxl (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.2712631Z   Downloading openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+2025-08-16T14:44:11.3776456Z Collecting pydantic (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.3808245Z   Downloading pydantic-2.11.7-py3-none-any.whl.metadata (67 kB)
+2025-08-16T14:44:11.4664967Z Collecting psutil (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.4698478Z   Downloading psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (22 kB)
+2025-08-16T14:44:11.4902264Z Collecting fake_useragent (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.4931840Z   Downloading fake_useragent-2.2.0-py3-none-any.whl.metadata (17 kB)
+2025-08-16T14:44:11.5766370Z Collecting vnstock_ezchart (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.5808056Z   Downloading vnstock_ezchart-0.0.2-py3-none-any.whl.metadata (6.6 kB)
+2025-08-16T14:44:11.5982782Z Collecting click (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.6016134Z   Downloading click-8.2.1-py3-none-any.whl.metadata (2.5 kB)
+2025-08-16T14:44:11.6140388Z Collecting seaborn (from vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.6172360Z   Downloading seaborn-0.13.2-py3-none-any.whl.metadata (5.4 kB)
+2025-08-16T14:44:11.7142231Z Collecting cffi>=1.12.0 (from curl_cffi>=0.7->yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:11.7174751Z   Downloading cffi-1.17.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.5 kB)
+2025-08-16T14:44:11.7340991Z Collecting pycparser (from cffi>=1.12.0->curl_cffi>=0.7->yfinance->-r requirements.txt (line 1))
+2025-08-16T14:44:11.7372751Z   Downloading pycparser-2.22-py3-none-any.whl.metadata (943 bytes)
+2025-08-16T14:44:11.7532839Z Collecting six>=1.5 (from python-dateutil>=2.8.2->pandas->-r requirements.txt (line 2))
+2025-08-16T14:44:11.7564946Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+2025-08-16T14:44:11.7833011Z Collecting et-xmlfile (from openpyxl->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.7864773Z   Downloading et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+2025-08-16T14:44:11.7993061Z Collecting annotated-types>=0.6.0 (from pydantic->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:11.8025508Z   Downloading annotated_types-0.7.0-py3-none-any.whl.metadata (15 kB)
+2025-08-16T14:44:12.4169867Z Collecting pydantic-core==2.33.2 (from pydantic->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.4203620Z   Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.8 kB)
+2025-08-16T14:44:12.4343917Z Collecting typing-inspection>=0.4.0 (from pydantic->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.4374969Z   Downloading typing_inspection-0.4.1-py3-none-any.whl.metadata (2.6 kB)
+2025-08-16T14:44:12.6303431Z Collecting matplotlib!=3.6.1,>=3.4 (from seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.6339837Z   Downloading matplotlib-3.10.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (11 kB)
+2025-08-16T14:44:12.7018528Z Collecting contourpy>=1.0.1 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.7049556Z   Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (5.5 kB)
+2025-08-16T14:44:12.7215113Z Collecting cycler>=0.10 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.7251728Z   Downloading cycler-0.12.1-py3-none-any.whl.metadata (3.8 kB)
+2025-08-16T14:44:12.8565210Z Collecting fonttools>=4.22.0 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.8598646Z   Downloading fonttools-4.59.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (108 kB)
+2025-08-16T14:44:12.9275611Z Collecting kiwisolver>=1.3.1 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.9308728Z   Downloading kiwisolver-1.4.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.3 kB)
+2025-08-16T14:44:12.9585320Z Collecting packaging>=20.0 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:12.9616623Z   Downloading packaging-25.0-py3-none-any.whl.metadata (3.3 kB)
+2025-08-16T14:44:13.1640322Z Collecting pillow>=8 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.1674965Z   Downloading pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.0 kB)
+2025-08-16T14:44:13.1963033Z Collecting pyparsing>=2.3.1 (from matplotlib!=3.6.1,>=3.4->seaborn->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.1994810Z   Downloading pyparsing-3.2.3-py3-none-any.whl.metadata (5.0 kB)
+2025-08-16T14:44:13.2334823Z Collecting squarify (from vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.2372002Z   Downloading squarify-0.4.4-py3-none-any.whl.metadata (600 bytes)
+2025-08-16T14:44:13.2667826Z Collecting wordcloud (from vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.2711718Z   Downloading wordcloud-1.9.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (3.4 kB)
+2025-08-16T14:44:13.3597854Z Collecting vnstock (from vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.3706516Z   Downloading vnstock-3.2.6-py3-none-any.whl.metadata (42 kB)
+2025-08-16T14:44:13.4141346Z Collecting importlib-metadata>=1.0 (from vnstock->vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.4171397Z   Downloading importlib_metadata-8.7.0-py3-none-any.whl.metadata (4.8 kB)
+2025-08-16T14:44:13.4353738Z Collecting tenacity (from vnstock->vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.4382731Z   Downloading tenacity-9.1.2-py3-none-any.whl.metadata (1.2 kB)
+2025-08-16T14:44:13.4575119Z Collecting zipp>=3.20 (from importlib-metadata>=1.0->vnstock->vnstock_ezchart->vnstock3->-r requirements.txt (line 6))
+2025-08-16T14:44:13.4607964Z   Downloading zipp-3.23.0-py3-none-any.whl.metadata (3.6 kB)
+2025-08-16T14:44:13.4852087Z Downloading yfinance-0.2.65-py2.py3-none-any.whl (119 kB)
+2025-08-16T14:44:13.4924008Z Downloading pandas-2.3.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.4 MB)
+2025-08-16T14:44:13.5715760Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.4/12.4 MB 158.4 MB/s  0:00:00
+2025-08-16T14:44:13.5753002Z Downloading numpy-2.3.2-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.9 MB)
+2025-08-16T14:44:13.6682219Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.9/16.9 MB 189.7 MB/s  0:00:00
+2025-08-16T14:44:13.6720789Z Downloading requests-2.32.4-py3-none-any.whl (64 kB)
+2025-08-16T14:44:13.6773830Z Downloading charset_normalizer-3.4.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (150 kB)
+2025-08-16T14:44:13.6828659Z Downloading idna-3.10-py3-none-any.whl (70 kB)
+2025-08-16T14:44:13.6884844Z Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+2025-08-16T14:44:13.6945641Z Downloading beautifulsoup4-4.13.4-py3-none-any.whl (187 kB)
+2025-08-16T14:44:13.7011720Z Downloading vnstock3-3.2.1-py3-none-any.whl (121 kB)
+2025-08-16T14:44:13.7099166Z Downloading certifi-2025.8.3-py3-none-any.whl (161 kB)
+2025-08-16T14:44:13.7165691Z Downloading curl_cffi-0.13.0-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (8.3 MB)
+2025-08-16T14:44:13.7571348Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 211.7 MB/s  0:00:00
+2025-08-16T14:44:13.7605353Z Downloading cffi-1.17.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (467 kB)
+2025-08-16T14:44:13.7681175Z Downloading frozendict-2.4.6-py311-none-any.whl (16 kB)
+2025-08-16T14:44:13.7732439Z Downloading platformdirs-4.3.8-py3-none-any.whl (18 kB)
+2025-08-16T14:44:13.7782372Z Downloading protobuf-6.32.0-cp39-abi3-manylinux2014_x86_64.whl (322 kB)
+2025-08-16T14:44:13.7879196Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+2025-08-16T14:44:13.7937047Z Downloading pytz-2025.2-py2.py3-none-any.whl (509 kB)
+2025-08-16T14:44:13.8010903Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+2025-08-16T14:44:13.8063045Z Downloading soupsieve-2.7-py3-none-any.whl (36 kB)
+2025-08-16T14:44:13.8118215Z Downloading typing_extensions-4.14.1-py3-none-any.whl (43 kB)
+2025-08-16T14:44:13.8170072Z Downloading tzdata-2025.2-py2.py3-none-any.whl (347 kB)
+2025-08-16T14:44:13.8247305Z Downloading vnai-2.1.9-py3-none-any.whl (25 kB)
+2025-08-16T14:44:13.8301655Z Downloading psutil-7.0.0-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (277 kB)
+2025-08-16T14:44:13.8457341Z Downloading websockets-15.0.1-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (182 kB)
+2025-08-16T14:44:13.8525798Z Downloading click-8.2.1-py3-none-any.whl (102 kB)
+2025-08-16T14:44:13.8586627Z Downloading fake_useragent-2.2.0-py3-none-any.whl (161 kB)
+2025-08-16T14:44:13.8644565Z Downloading openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+2025-08-16T14:44:13.8710985Z Downloading et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+2025-08-16T14:44:13.8759892Z Downloading pycparser-2.22-py3-none-any.whl (117 kB)
+2025-08-16T14:44:13.8818963Z Downloading pydantic-2.11.7-py3-none-any.whl (444 kB)
+2025-08-16T14:44:13.8893883Z Downloading pydantic_core-2.33.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+2025-08-16T14:44:13.9017440Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 178.9 MB/s  0:00:00
+2025-08-16T14:44:13.9048884Z Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+2025-08-16T14:44:13.9097936Z Downloading typing_inspection-0.4.1-py3-none-any.whl (14 kB)
+2025-08-16T14:44:13.9147324Z Downloading seaborn-0.13.2-py3-none-any.whl (294 kB)
+2025-08-16T14:44:13.9753744Z Downloading matplotlib-3.10.5-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (8.7 MB)
+2025-08-16T14:44:14.0428967Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.7/8.7 MB 128.9 MB/s  0:00:00
+2025-08-16T14:44:14.0460783Z Downloading contourpy-1.3.3-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (355 kB)
+2025-08-16T14:44:14.0541139Z Downloading cycler-0.12.1-py3-none-any.whl (8.3 kB)
+2025-08-16T14:44:14.0632716Z Downloading fonttools-4.59.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.0 MB)
+2025-08-16T14:44:14.1278170Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.0/5.0 MB 75.5 MB/s  0:00:00
+2025-08-16T14:44:14.1325744Z Downloading kiwisolver-1.4.9-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (1.4 MB)
+2025-08-16T14:44:14.1419255Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 168.9 MB/s  0:00:00
+2025-08-16T14:44:14.1451194Z Downloading packaging-25.0-py3-none-any.whl (66 kB)
+2025-08-16T14:44:14.1510104Z Downloading pillow-11.3.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.6 MB)
+2025-08-16T14:44:14.1893668Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 188.2 MB/s  0:00:00
+2025-08-16T14:44:14.1926865Z Downloading pyparsing-3.2.3-py3-none-any.whl (111 kB)
+2025-08-16T14:44:14.1990944Z Downloading vnstock_ezchart-0.0.2-py3-none-any.whl (14 kB)
+2025-08-16T14:44:14.2045690Z Downloading squarify-0.4.4-py3-none-any.whl (4.1 kB)
+2025-08-16T14:44:14.2146191Z Downloading vnstock-3.2.6-py3-none-any.whl (121 kB)
+2025-08-16T14:44:14.2219565Z Downloading importlib_metadata-8.7.0-py3-none-any.whl (27 kB)
+2025-08-16T14:44:14.2269145Z Downloading zipp-3.23.0-py3-none-any.whl (10 kB)
+2025-08-16T14:44:14.2320715Z Downloading tenacity-9.1.2-py3-none-any.whl (28 kB)
+2025-08-16T14:44:14.2386571Z Downloading wordcloud-1.9.4-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (547 kB)
+2025-08-16T14:44:14.2490527Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 547.9/547.9 kB 85.5 MB/s  0:00:00
+2025-08-16T14:44:14.3474470Z Building wheels for collected packages: multitasking, peewee
+2025-08-16T14:44:14.3482244Z   Building wheel for multitasking (pyproject.toml): started
+2025-08-16T14:44:14.5365296Z   Building wheel for multitasking (pyproject.toml): finished with status 'done'
+2025-08-16T14:44:14.5371300Z   Created wheel for multitasking: filename=multitasking-0.0.12-py3-none-any.whl size=15636 sha256=6a0aa322475339c05db8a036570cd5b29d81b6a9f341ff993970f6b3278b975b
+2025-08-16T14:44:14.5372800Z   Stored in directory: /home/runner/.cache/pip/wheels/42/d6/84/bf57a755f4569494cd00de4bb46ef064874823f4d19c82e960
+2025-08-16T14:44:14.5403395Z   Building wheel for peewee (pyproject.toml): started
+2025-08-16T14:44:26.6846633Z   Building wheel for peewee (pyproject.toml): finished with status 'done'
+2025-08-16T14:44:26.6859578Z   Created wheel for peewee: filename=peewee-3.18.2-cp311-cp311-linux_x86_64.whl size=1064027 sha256=f8eef2da4606328b28a69b3704d968c694628cbcfc6cdaee736496dfd9c27edf
+2025-08-16T14:44:26.6860711Z   Stored in directory: /home/runner/.cache/pip/wheels/28/84/61/758d1bd7b9c9d700158c8642a8aff2a9bf2e1ae69641c40784
+2025-08-16T14:44:26.6880795Z Successfully built multitasking peewee
+2025-08-16T14:44:26.7968177Z Installing collected packages: squarify, pytz, peewee, multitasking, zipp, websockets, urllib3, tzdata, typing-extensions, tenacity, soupsieve, six, pyparsing, pycparser, psutil, protobuf, platformdirs, pillow, packaging, numpy, kiwisolver, idna, frozendict, fonttools, fake_useragent, et-xmlfile, cycler, click, charset_normalizer, certifi, annotated-types, typing-inspection, requests, python-dateutil, pydantic-core, openpyxl, importlib-metadata, contourpy, cffi, beautifulsoup4, vnai, pydantic, pandas, matplotlib, curl_cffi, yfinance, wordcloud, seaborn, vnstock, vnstock_ezchart, vnstock3
+2025-08-16T14:44:37.5875606Z 
+2025-08-16T14:44:37.5905659Z Successfully installed annotated-types-0.7.0 beautifulsoup4-4.13.4 certifi-2025.8.3 cffi-1.17.1 charset_normalizer-3.4.3 click-8.2.1 contourpy-1.3.3 curl_cffi-0.13.0 cycler-0.12.1 et-xmlfile-2.0.0 fake_useragent-2.2.0 fonttools-4.59.1 frozendict-2.4.6 idna-3.10 importlib-metadata-8.7.0 kiwisolver-1.4.9 matplotlib-3.10.5 multitasking-0.0.12 numpy-2.3.2 openpyxl-3.1.5 packaging-25.0 pandas-2.3.1 peewee-3.18.2 pillow-11.3.0 platformdirs-4.3.8 protobuf-6.32.0 psutil-7.0.0 pycparser-2.22 pydantic-2.11.7 pydantic-core-2.33.2 pyparsing-3.2.3 python-dateutil-2.9.0.post0 pytz-2025.2 requests-2.32.4 seaborn-0.13.2 six-1.17.0 soupsieve-2.7 squarify-0.4.4 tenacity-9.1.2 typing-extensions-4.14.1 typing-inspection-0.4.1 tzdata-2025.2 urllib3-2.5.0 vnai-2.1.9 vnstock-3.2.6 vnstock3-3.2.1 vnstock_ezchart-0.0.2 websockets-15.0.1 wordcloud-1.9.4 yfinance-0.2.65 zipp-3.23.0
+2025-08-16T14:44:37.9987868Z ##[group]Run python bot.py
+2025-08-16T14:44:37.9988155Z [36;1mpython bot.py[0m
+2025-08-16T14:44:38.0031331Z shell: /usr/bin/bash -e {0}
+2025-08-16T14:44:38.0031557Z env:
+2025-08-16T14:44:38.0031802Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:38.0032216Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib/pkgconfig
+2025-08-16T14:44:38.0032614Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:38.0032999Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:38.0033363Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.13/x64
+2025-08-16T14:44:38.0033712Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.13/x64/lib
+2025-08-16T14:44:38.0034504Z   BOT_TOKEN: ***
+2025-08-16T14:44:38.0034763Z   CHAT_ID: ***
+2025-08-16T14:44:38.0034949Z ##[endgroup]
+2025-08-16T14:44:38.0183868Z   File "/home/runner/work/Telegram_bot_update1/Telegram_bot_update1/bot.py", line 16
+2025-08-16T14:44:38.0184962Z     print(f\"[DEBUG] {msg}\", flush=True)
+2025-08-16T14:44:38.0185396Z             ^
+2025-08-16T14:44:38.0185882Z SyntaxError: unexpected character after line continuation character
+2025-08-16T14:44:38.0216032Z ##[error]Process completed with exit code 1.
+2025-08-16T14:44:38.0308821Z Post job cleanup.
+2025-08-16T14:44:38.1236265Z [command]/usr/bin/git version
+2025-08-16T14:44:38.1271132Z git version 2.50.1
+2025-08-16T14:44:38.1312720Z Temporarily overriding HOME='/home/runner/work/_temp/b6105b4e-2ade-4fda-aa16-e807f81d3742' before making global git config changes
+2025-08-16T14:44:38.1313909Z Adding repository directory to the temporary git global config as a safe directory
+2025-08-16T14:44:38.1326095Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Telegram_bot_update1/Telegram_bot_update1
+2025-08-16T14:44:38.1359139Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-08-16T14:44:38.1390836Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-08-16T14:44:38.1611019Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-08-16T14:44:38.1631076Z http.https://github.com/.extraheader
+2025-08-16T14:44:38.1643010Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-08-16T14:44:38.1671972Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-08-16T14:44:38.1996472Z Cleaning up orphan processes
