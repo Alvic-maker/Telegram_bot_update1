@@ -16,6 +16,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install vnstock  # hoặc vnstock3 nếu dùng package này
       - name: Run bot.py
         run: python bot.py
         env:
@@ -23,3 +24,4 @@ jobs:
           CHAT_ID:   ${{ secrets.CHAT_ID }}
           # Optional: set USE_VNSTOCK=1 if you added vnstock secret/need it
           # USE_VNSTOCK: ${{ secrets.USE_VNSTOCK }}
+          dbg(f"vnstock module loaded: {vns is not None}")
