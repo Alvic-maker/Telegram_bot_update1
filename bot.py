@@ -19,7 +19,10 @@ import re
 import traceback
 from datetime import datetime, timedelta
 
-import requests
+try:
+    import requests
+except Exception:
+    requests = None
 import pandas as pd
 import numpy as np
 
@@ -99,93 +102,161 @@ def safe_call(obj, candidates, *args, **kwargs):
 def vn_index(index_code="VNINDEX"):
     if vns is None:
         raise RuntimeError("vnstock not available")
-    # common: vns.stock.index or vns.index
-    candidates = [
-        ("stock", "index"),
-        (None, "index"),
-        ("stock", "get_index"),
-        (None, "get_index"),
+    # Try many variant function names/signatures used across vnstock versions.
+    names = [
+        'stock_historical_data', 'stock_history', 'history', 'get_history',
+        'get_index', 'index', 'market_index', 'get_market_index',
     ]
+    modules = [vns, getattr(vns, 'stock', None), getattr(vns, 'api', None)]
     last_exc = None
-    for mod_attr, fn in candidates:
-        try:
-            target = vns.stock if mod_attr == "stock" and hasattr(vns, "stock") else vns
-            if hasattr(target, fn):
-                return getattr(target, fn)(index_code, "1D", count=60) if mod_attr=="stock" else getattr(target, fn)(index_code)
-        except Exception as e:
-            last_exc = e
+    for mod in modules:
+        if not mod:
             continue
-    raise last_exc or RuntimeError("vnstock.index not found")
+        for name in names:
+            if not hasattr(mod, name):
+                continue
+            func = getattr(mod, name)
+            try:
+                # try common signatures
+                try:
+                    return func(index_code)
+                except TypeError:
+                    pass
+                try:
+                    return func(index_code, '1D', count=60)
+                except TypeError:
+                    pass
+                try:
+                    # some variants expect (symbol, start_date, end_date, resolution)
+                    end = datetime.now().strftime('%Y-%m-%d')
+                    start = (datetime.now() - timedelta(days=60)).strftime('%Y-%m-%d')
+                    return func(index_code, start, end, '1D')
+                except TypeError:
+                    pass
+            except Exception as e:
+                last_exc = e
+                continue
+    raise last_exc or RuntimeError('vnstock.index not found')
 
 def vn_quote(symbol):
     if vns is None:
         raise RuntimeError("vnstock not available")
-    # candidates: vns.stock.quote, vns.quote, vns.get_quote
-    cand = [("stock","quote"),(None,"quote"),("stock","get_quote"),(None,"get_quote")]
+    names = ['stock_quote','stock_latest','quote','get_quote','get_stock_quote','get_latest_price','get_price']
+    modules = [vns, getattr(vns, 'stock', None), getattr(vns, 'api', None)]
     last_exc = None
-    for mod_attr, fn in cand:
-        try:
-            target = vns.stock if mod_attr=="stock" and hasattr(vns,"stock") else vns
-            if hasattr(target, fn):
-                return getattr(target, fn)(symbol)
-        except Exception as e:
-            last_exc = e
+    for mod in modules:
+        if not mod:
             continue
-    raise last_exc or RuntimeError("vnstock.quote not found")
+        for name in names:
+            if not hasattr(mod, name):
+                continue
+            func = getattr(mod, name)
+            try:
+                try:
+                    return func(symbol)
+                except TypeError:
+                    # maybe signature (symbol, date) or (symbol, kwargs)
+                    try:
+                        return func(symbol, datetime.now().strftime('%Y-%m-%d'))
+                    except Exception:
+                        return func(symbol)
+            except Exception as e:
+                last_exc = e
+                continue
+    raise last_exc or RuntimeError('vnstock.quote not found')
 
 def vn_history(symbol, start_date=None, end_date=None, resolution="1D", count=None):
     if vns is None:
         raise RuntimeError("vnstock not available")
-    cand = [("stock","history"),(None,"history"),("stock","get_history"),(None,"get_history")]
+    names = ['stock_historical_data','history','get_history','get_historical','get_stock_history','stock_history']
+    modules = [vns, getattr(vns, 'stock', None), getattr(vns, 'api', None)]
     last_exc = None
-    for mod_attr, fn in cand:
-        try:
-            target = vns.stock if mod_attr=="stock" and hasattr(vns,"stock") else vns
-            if hasattr(target, fn):
-                # signature varies; try common params
-                func = getattr(target, fn)
-                if 'symbol' in func.__code__.co_varnames:
-                    return func(symbol=symbol, resolution=resolution, start_date=start_date, end_date=end_date, count=count)
-                else:
-                    # try simpler call
-                    return func(symbol, resolution, start_date, end_date)
-        except Exception as e:
-            last_exc = e
+    for mod in modules:
+        if not mod:
             continue
-    raise last_exc or RuntimeError("vnstock.history not found")
+        for name in names:
+            if not hasattr(mod, name):
+                continue
+            func = getattr(mod, name)
+            try:
+                # try common signatures
+                # (symbol, start, end, resolution)
+                if start_date is None and end_date is None and count is not None:
+                    try:
+                        return func(symbol, count=count)
+                    except TypeError:
+                        pass
+                try:
+                    if start_date is None:
+                        # default last N days
+                        end = datetime.now().strftime('%Y-%m-%d')
+                        start = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+                    else:
+                        start = start_date; end = end_date or datetime.now().strftime('%Y-%m-%d')
+                    return func(symbol, start, end, resolution)
+                except TypeError:
+                    # try simpler signatures
+                    try:
+                        return func(symbol, resolution)
+                    except TypeError:
+                        pass
+            except Exception as e:
+                last_exc = e
+                continue
+    raise last_exc or RuntimeError('vnstock.history not found')
 
 def vn_foreign(symbol=None):
     if vns is None:
         raise RuntimeError("vnstock not available")
-    cand = [("stock","foreign_trade"),(None,"foreign_trade"),("stock","foreign"),(None,"foreign")]
+    names = ['stock_top_foreign_trade','top_foreign_trade','foreign_trade','top_foreign','foreign_flow','foreign']
+    modules = [vns, getattr(vns, 'stock', None), getattr(vns, 'api', None)]
     last_exc = None
-    for mod_attr, fn in cand:
-        try:
-            target = vns.stock if mod_attr=="stock" and hasattr(vns,"stock") else vns
-            if hasattr(target, fn):
-                if symbol:
-                    return getattr(target, fn)(symbol=symbol)
-                else:
-                    return getattr(target, fn)()
-        except Exception as e:
-            last_exc = e
+    for mod in modules:
+        if not mod:
             continue
-    raise last_exc or RuntimeError("vnstock.foreign not found")
+        for name in names:
+            if not hasattr(mod, name):
+                continue
+            func = getattr(mod, name)
+            try:
+                if symbol:
+                    try:
+                        return func(symbol)
+                    except TypeError:
+                        return func(symbol=symbol)
+                else:
+                    try:
+                        return func()
+                    except TypeError:
+                        # maybe requires date
+                        return func(datetime.now().strftime('%Y-%m-%d'))
+            except Exception as e:
+                last_exc = e
+                continue
+    raise last_exc or RuntimeError('vnstock.foreign not found')
 
 def vn_price_board(symbol):
     if vns is None:
         raise RuntimeError("vnstock not available")
-    cand = [("stock","price_board"),(None,"price_board"),("stock","orderbook"),(None,"orderbook")]
+    names = ['price_board','orderbook','get_orderbook','get_price_board','priceboard']
+    modules = [vns, getattr(vns, 'stock', None), getattr(vns, 'api', None)]
     last_exc = None
-    for mod_attr, fn in cand:
-        try:
-            target = vns.stock if mod_attr=="stock" and hasattr(vns,"stock") else vns
-            if hasattr(target, fn):
-                return getattr(target, fn)([symbol]) if mod_attr=="stock" else getattr(target, fn)(symbol)
-        except Exception as e:
-            last_exc = e
+    for mod in modules:
+        if not mod:
             continue
-    raise last_exc or RuntimeError("vnstock.price_board not found")
+        for name in names:
+            if not hasattr(mod, name):
+                continue
+            func = getattr(mod, name)
+            try:
+                try:
+                    return func([symbol])
+                except TypeError:
+                    return func(symbol)
+            except Exception as e:
+                last_exc = e
+                continue
+    raise last_exc or RuntimeError('vnstock.price_board not found')
 
 # Compute indicators from history df (pandas DataFrame with 'close', 'volume', 'high', 'low' cols)
 def indicators_from_history(df):
@@ -402,6 +473,10 @@ def chunk_text(s: str, limit: int = 3500):
 def send_to_telegram(text: str):
     if not BOT_TOKEN or not CHAT_ID:
         dbg("BOT_TOKEN or CHAT_ID missing - not sending to Telegram")
+        print(text)
+        return False
+    if requests is None:
+        dbg("requests library not available - cannot send to Telegram, printing instead")
         print(text)
         return False
     base_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
