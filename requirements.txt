@@ -2,4 +2,5 @@ yfinance
 pandas
 numpy
 requests
-vnstock3   # optional - chỉ nếu bạn muốn khối ngoại (nếu cài sẽ dùng)
+beautifulsoup4
+vnstock3

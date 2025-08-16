@@ -1,20 +1,25 @@
-name: Stock Bot
+
+name: Stock Bot Multi-source
 
 on:
   schedule:
-    - cron: "*/5 2-8 * * 1-5"  # Mỗi 5 phút từ 9h-15h VN, Thứ 2-6
+    - cron: "*/5 2-8 * * 1-5"
   workflow_dispatch:
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.11'
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run bot
-        run: python bot.py
+        run: python bot_multi_source.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID:   ${{ secrets.CHAT_ID }}
+          USE_VNSTOCK: '1'

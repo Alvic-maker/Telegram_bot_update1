@@ -1,19 +1,22 @@
-# Telegram Stock Reporter (GitHub Actions)
 
-Tải xuống và push toàn bộ thư mục này lên 1 repo GitHub public/private (nếu private thì cần có runner/plan tương ứng).
-Các file chính: `bot.py`, `requirements.txt`, `.github/workflows/notify.yml`.
+Multi-source Telegram stock bot (VN market)
+------------------------------------------
 
-## Các bước nhanh
-1. Tạo bot trên Telegram bằng @BotFather → lưu **BOT_TOKEN**.
-2. Lấy **CHAT_ID** (bằng @userinfobot hoặc add bot vào nhóm và lấy id).
-3. Tạo repo trên GitHub, push toàn bộ file từ thư mục này.
-4. Vào **Settings → Secrets** của repo, thêm `BOT_TOKEN` và `CHAT_ID` (giá trị là token và id).
-5. Push commit. Workflow sẽ chạy theo cron mỗi 5 phút (GitHub dùng UTC). Bạn có thể chạy thủ công từ tab Actions → chọn workflow → Run workflow.
+Files:
+- bot_multi_source.py       : orchestrator (main). Run this.
+- sources/yfinance_api.py   : yfinance fetchers (primary for per-symbol).
+- sources/vnstock_api.py    : vnstock wrapper (optional, for foreign flows).
+- sources/scrapers.py       : scrapers for VietStock/CafeF (fallback for index/NN totals).
+- normalizers.py            : normalize raw outputs.
+- cache.py                  : simple TTL cache.
+- requirements.txt          : dependencies.
+- .github/workflows/main.yml: GitHub Actions workflow (run Mon-Fri 09:00-15:00 VN time).
 
-## Lưu ý & debug nhanh
-- Nếu bot không gửi: kiểm tra **Actions logs**, kiểm tra secrets, kiểm tra bot đã được start/allowed chưa.
-- yfinance có thể trả về Volume = NaN cho một số chỉ số; code đã xử lý.
-- Nếu cần dữ liệu nhanh hơn/chi tiết hơn (khớp lệnh, KLGD), bật `USE_VNSTOCK=1` và cài `vnstock` (thêm secret nếu cần).
+Usage:
+- Add secrets BOT_TOKEN and CHAT_ID to GitHub repo.
+- Ensure requirements installed (via workflow or locally): pip install -r requirements.txt
+- Run: python bot_multi_source.py
 
-## Muốn thêm
-- Báo động >5%/ < -5%, so sánh đầu tháng, xuất file cấu hình người dùng... mình hỗ trợ tiếp, nhưng file này đã sẵn sàng để **download → push → chạy**.
+Notes:
+- The scrapers are fragile; prefer vnstock or official data feeds for production.
+- The package uses yfinance as the reliable primary source for per-symbol OHLC/volume.
