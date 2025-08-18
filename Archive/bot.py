@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# bot.py - stock reporter (uses yfinance) with VN timezone-aware timestamps and clean formatting
-import os, traceback
-from datetime import datetime, timedelta
+# bot.py - stock reporter (uses yfinance) with VN timezone-aware timestamps
+import os, traceback, math
+from datetime import datetime
 try:
     from zoneinfo import ZoneInfo
 except Exception:
@@ -19,15 +19,15 @@ except Exception:
 BOT_TOKEN = os.getenv("BOT_TOKEN", "").strip()
 CHAT_ID = os.getenv("CHAT_ID", "").strip()
 
-# symbols to report (CSV string or env SECRET)
-SYMBOLS = [s.strip().upper() for s in os.getenv("SYMBOLS", "MBB,HPG,SSI,PVP,KSB,QTP").split(",") if s.strip()]
+# symbols to report
+SYMBOLS = os.getenv("SYMBOLS", "MBB,HPG,SSI,PVP,KSB,QTP").split(",")
 
 def now_vn_str():
     if ZoneInfo is not None:
         now = datetime.now(ZoneInfo("Asia/Ho_Chi_Minh"))
     else:
         # fallback: assume system tz is UTC and add 7 hours
-        now = datetime.utcnow() + timedelta(hours=7)
+        now = datetime.utcnow() + __import__("datetime").timedelta(hours=7)
     return now.strftime("%Y-%m-%d %H:%M:%S")
 
 def fm_money_million(v):
@@ -67,11 +67,12 @@ def fetch_symbol_yf(sym):
         last = float(close.iloc[-1])
         prev = float(close.iloc[-2]) if len(close) >= 2 else last
         pct = (last/prev - 1) * 100 if prev != 0 else 0.0
-        vol = int(hist['Volume'].astype(float).iloc[-1]) if 'Volume' in hist and len(hist['Volume'].dropna())>0 else None
+        vol = int(hist['Volume'].astype(float).iloc[-1]) if 'Volume' in hist else None
         avg5_price = float(close.tail(5).mean()) if len(close) >= 5 else None
         avgvol20 = int(hist['Volume'].astype(float).tail(20).mean()) if 'Volume' in hist and len(hist['Volume'].dropna())>=20 else None
         return {"source":"yfinance","symbol":sym,"price": last,"pct": pct,"vol": vol,"avg5_price": avg5_price,"avg5_vol": avgvol20}
     except Exception as e:
+        # avoid crashing whole script
         print("fetch_symbol_yf error", sym, e)
         return None
 
@@ -94,8 +95,7 @@ def fetch_index_yf():
 
 def build_report(symbols):
     now = now_vn_str()
-    lines = []
-    lines.append(f"📊 Báo cáo thị trường — {now}")
+    lines = [f"📊 Báo cáo thị trường — {now}"]
     # VN-Index attempt via yfinance
     idx = fetch_index_yf()
     if idx and idx.get("price") is not None:
@@ -103,47 +103,26 @@ def build_report(symbols):
     else:
         lines.append("📈 VN-Index: — (lỗi dữ liệu)")
     lines.append("")
-
-    # Summary (simple counts)
-    up = down = 0
-    details = []
+    lines.append("📌 Chi tiết mã:")
     for s in symbols:
+        s = s.strip().upper()
         info = fetch_symbol_yf(s)
         if not info or info.get("price") is None:
-            details.append(f"{s}: — (lỗi dữ liệu)")
+            lines.append(f"{s}: — (lỗi dữ liệu)")
             continue
-        pct = info.get("pct")
-        if pct is not None:
-            if pct > 0: up += 1
-            elif pct < 0: down += 1
         vol = info.get("vol")
-        avgvol = info.get("avg5_vol")
         vol_ratio = None
-        if vol and avgvol:
-            try:
-                vol_ratio = vol / avgvol if avgvol>0 else None
-            except Exception:
-                vol_ratio = None
+        try:
+            avg = info.get("avg5_vol")
+            if avg and avg>0 and vol:
+                vol_ratio = vol / avg
+        except Exception:
+            vol_ratio = None
         vol_ratio_s = f" (VolRatio={vol_ratio:.2f}×)" if vol_ratio else ""
-        details.append(f"{s}: {int(info.get('price'))} {fm_pct(pct)} | KL={fm_shares_million(vol)}{vol_ratio_s} | TB tuần: {info.get('avg5_price') or '—'} / {fm_shares_million(avgvol)}")
-    lines.append(f"Summary: Tăng {up} / Giảm {down}")
-    lines.append("🔻 Chi tiết mã:")
-    lines.extend(details)
-    lines.append("")
-    lines.append("⚠️ Alerts:")
-    # simple alert example
-    for s in symbols:
-        info = fetch_symbol_yf(s)
-        if not info: continue
-        pct = info.get("pct") or 0
-        if pct >= 5:
-            lines.append(f"  {s} tăng mạnh {fm_pct(pct)}")
-        if pct <= -5:
-            lines.append(f"  {s} giảm mạnh {fm_pct(pct)}")
+        lines.append(f"{s}: {int(info.get('price'))} {fm_pct(info.get('pct'))} | KL={fm_shares_million(vol)}{vol_ratio_s} | TB tuần: {info.get('avg5_price') or '—'} / {fm_shares_million(info.get('avg5_vol'))}")
     lines.append("")
     lines.append(f"(Thời gian báo cáo: {now}) - Bot_fixed")
-    # Join with actual newline characters (not escaped)
-    return "\n".join(lines)
+    return "\\n".join(lines)
 
 def send_to_telegram(text):
     if not BOT_TOKEN or not CHAT_ID:
@@ -152,14 +131,16 @@ def send_to_telegram(text):
         return False
     base = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     ok = True
-    try:
-        r = requests.post(base, data={"chat_id": CHAT_ID, "text": text, "disable_web_page_preview": True}, timeout=20)
-        print("Telegram response", r.status_code, r.text[:400])
-        if r.status_code != 200:
+    parts = [text]
+    for part in parts:
+        try:
+            r = requests.post(base, data={"chat_id": CHAT_ID, "text": part, "disable_web_page_preview": True}, timeout=20)
+            print("Telegram response", r.status_code, r.text[:400])
+            if r.status_code != 200:
+                ok = False
+        except Exception as e:
+            print("Telegram send error", e)
             ok = False
-    except Exception as e:
-        print("Telegram send error", e)
-        ok = False
     return ok
 
 if __name__ == "__main__":

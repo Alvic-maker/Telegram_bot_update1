@@ -1,22 +1,10 @@
+# Bot update pack (fixed)
+This package contains:
+- bot.py (fixed newline escaping and formatting)
+- .github/workflows/main.yml (cron adjusted for VN timezone; ensure file is on default branch)
+- requirements.txt
 
-Multi-source Telegram stock bot (VN market)
-------------------------------------------
-
-Files:
-- bot_multi_source.py       : orchestrator (main). Run this.
-- sources/yfinance_api.py   : yfinance fetchers (primary for per-symbol).
-- sources/vnstock_api.py    : vnstock wrapper (optional, for foreign flows).
-- sources/scrapers.py       : scrapers for VietStock/CafeF (fallback for index/NN totals).
-- normalizers.py            : normalize raw outputs.
-- cache.py                  : simple TTL cache.
-- requirements.txt          : dependencies.
-- .github/workflows/main.yml: GitHub Actions workflow (run Mon-Fri 09:00-15:00 VN time).
-
-Usage:
-- Add secrets BOT_TOKEN and CHAT_ID to GitHub repo.
-- Ensure requirements installed (via workflow or locally): pip install -r requirements.txt
-- Run: python bot_multi_source.py
-
-Notes:
-- The scrapers are fragile; prefer vnstock or official data feeds for production.
-- The package uses yfinance as the reliable primary source for per-symbol OHLC/volume.
+Important:
+- Put these files into the repository root. The workflow file must be at .github/workflows/main.yml on the repository's default branch (usually 'main' or 'master').
+- GitHub scheduled workflows run **only** on the repository's default branch.
+- Make sure Actions are enabled for the repo and the workflow is not disabled.
