@@ -1,13 +1,13 @@
-
-name: Stock Bot Multi-source
+name: NotifyStockTelegram
 
 on:
   schedule:
-    - cron: "*/5 2-8 * * 1-5"
+    - cron: '*/5 2-7 * * 1-5'   # every 5 min 02:00-07:59 UTC => 09:00-14:59 VN
+    - cron: '0 8 * * 1-5'      # 08:00 UTC => 15:00 VN (single run at 15:00)
   workflow_dispatch:
 
 jobs:
-  run:
+  send:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,11 +15,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install dependencies
+      - name: Install requirements
         run: pip install -r requirements.txt
       - name: Run bot
-        run: python bot_multi_source.py
+        run: python bot.py
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID:   ${{ secrets.CHAT_ID }}
-          USE_VNSTOCK: '1'
+          # optional: pass symbols via secret/env
+          SYMBOLS: ${{ secrets.SYMBOLS }}
