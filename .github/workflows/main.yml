@@ -1,13 +1,13 @@
-name: NotifyStockTelegram
+
+name: Stock Bot Multi-source
 
 on:
   schedule:
-    - cron: '*/5 2-7 * * 1-5'   # every 5 min 02:00-07:59 UTC => 09:00-14:59 VN
-    - cron: '0 8 * * 1-5'      # 08:00 UTC => 15:00 VN (single run at 15:00)
+    - cron: "*/5 2-8 * * 1-5"
   workflow_dispatch:
 
 jobs:
-  send:
+  run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,11 +15,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install requirements
+      - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run bot
-        run: python bot.py
+        run: python bot_multi_source.py
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID:   ${{ secrets.CHAT_ID }}
+<<<<<<< HEAD
           SYMBOLS: ${{ secrets.SYMBOLS }}
+=======
+          USE_VNSTOCK: '1'
+>>>>>>> parent of 6f7af73 (trước chạy được, cấu hình lại timezone)
